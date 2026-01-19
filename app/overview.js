@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Animated } from 'react-native';
 import { router } from 'expo-router';
+import { useEffect, useRef } from 'react';
+import { Animated, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Overview() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -41,8 +41,8 @@ export default function Overview() {
             transform: [{ translateY: slideAnim }]
           }, { marginTop: 24 }]}
         >
-          <Text style={styles.title}>Your Financial Journey Starts Here</Text>
-          <Text style={styles.subtitle}>Experience seamless loan services with instant approval and flexible repayment options.</Text>
+          <Text style={styles.title}>Your Trusted Digital Loan Partner</Text>
+          <Text style={styles.subtitle}>Experience seamless loan services with instant approval and flexible repayment options. We&apos;re here to help you achieve your financial goals with our reliable and secure platform.</Text>
         </Animated.View>
 
         <Animated.View 
@@ -51,23 +51,42 @@ export default function Overview() {
             transform: [{ translateY: slideAnim }]
           }, { marginTop: 32 }]}
         >
+          <Text style={styles.sectionTitle}>Why Choose ElitePaisa?</Text>
           <View style={styles.featureCardsContainer}>
             <View style={styles.featureCard}>
               <Text style={styles.featureIcon}>⚡</Text>
-              <Text style={styles.featureTitle}>Instant Loans</Text>
+              <Text style={styles.featureTitle}>Fast Approval</Text>
               <Text style={styles.featureDescription}>Get approved in minutes with our streamlined process</Text>
             </View>
             
             <View style={styles.featureCard}>
               <Text style={styles.featureIcon}>💰</Text>
-              <Text style={styles.featureTitle}>Easy EMI</Text>
-              <Text style={styles.featureDescription}>Flexible repayment options tailored to your needs</Text>
+              <Text style={styles.featureTitle}>Transparent Charges</Text>
+              <Text style={styles.featureDescription}>No hidden fees, clear cost breakdown upfront</Text>
             </View>
             
             <View style={styles.featureCard}>
-              <Text style={styles.featureIcon}>🔒</Text>
-              <Text style={styles.featureTitle}>Secure Process</Text>
+              <Text style={styles.featureIcon}>🔄</Text>
+              <Text style={styles.featureTitle}>Flexible EMI Options</Text>
+              <Text style={styles.featureDescription}>Customize repayment to match your budget</Text>
+            </View>
+            
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>🛡️</Text>
+              <Text style={styles.featureTitle}>Secure Data</Text>
               <Text style={styles.featureDescription}>Bank-grade security to protect your financial data</Text>
+            </View>
+            
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>🌐</Text>
+              <Text style={styles.featureTitle}>100% Online Process</Text>
+              <Text style={styles.featureDescription}>Complete application without visiting any branch</Text>
+            </View>
+            
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>🏆</Text>
+              <Text style={styles.featureTitle}>Trusted Platform</Text>
+              <Text style={styles.featureDescription}>Serving thousands of satisfied customers</Text>
             </View>
           </View>
         </Animated.View>
@@ -78,29 +97,111 @@ export default function Overview() {
             transform: [{ translateY: slideAnim }]
           }, { marginTop: 32 }]}
         >
-          <View style={styles.loanTypesContainer}>
-            <Text style={styles.sectionTitle}>Popular Loan Types</Text>
+          <Text style={styles.sectionTitle}>Our Services Overview</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.servicesScroll}>
+            <View style={styles.serviceCard}>
+              <Text style={styles.serviceIcon}>💳</Text>
+              <Text style={styles.serviceTitle}>Instant Loan Access</Text>
+              <Text style={styles.serviceDesc}>Quick approval and disbursal in minutes</Text>
+            </View>
+            
+            <View style={styles.serviceCard}>
+              <Text style={styles.serviceIcon}>📊</Text>
+              <Text style={styles.serviceTitle}>EMI Management</Text>
+              <Text style={styles.serviceDesc}>Easy EMI tracking and management</Text>
+            </View>
+            
+            <View style={styles.serviceCard}>
+              <Text style={styles.serviceIcon}>🔍</Text>
+              <Text style={styles.serviceTitle}>Loan Tracking</Text>
+              <Text style={styles.serviceDesc}>Real-time status of your loan application</Text>
+            </View>
+            
+            <View style={styles.serviceCard}>
+              <Text style={styles.serviceIcon}>💬</Text>
+              <Text style={styles.serviceTitle}>Customer Support</Text>
+              <Text style={styles.serviceDesc}>24/7 assistance for all your queries</Text>
+            </View>
+          </ScrollView>
+        </Animated.View>
+
+        <Animated.View 
+          style={[{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }, { marginTop: 32 }]}
+        >
+          <Text style={styles.sectionTitle}>Types of Loans</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.loanTypesScroll}>
             <View style={styles.loanTypeCard}>
-              <Text style={styles.loanTypeIcon}>💳</Text>
+              <Text style={styles.loanTypeIcon}>👤</Text>
               <View style={styles.loanTypeInfo}>
                 <Text style={styles.loanTypeName}>Personal Loan</Text>
-                <Text style={styles.loanTypeDesc}>Up to ₹ 5,00,000 with competitive rates</Text>
+                <Text style={styles.loanTypeDesc}>Flexible loan for personal needs up to ₹15L</Text>
+              </View>
+              <View style={styles.loanTypeDetails}>
+                <Text style={styles.loanTypeAmount}>Max: ₹15L</Text>
+                <Text style={styles.loanTypeRate}>From 10.5% p.a.</Text>
               </View>
             </View>
+            
             <View style={styles.loanTypeCard}>
-              <Text style={styles.loanTypeIcon}>🏠</Text>
+              <Text style={styles.loanTypeIcon}>💼</Text>
               <View style={styles.loanTypeInfo}>
-                <Text style={styles.loanTypeName}>Home Loan</Text>
-                <Text style={styles.loanTypeDesc}>Special rates starting from 7.5% p.a.</Text>
+                <Text style={styles.loanTypeName}>Business Loan</Text>
+                <Text style={styles.loanTypeDesc}>Funding for business growth up to ₹50L</Text>
+              </View>
+              <View style={styles.loanTypeDetails}>
+                <Text style={styles.loanTypeAmount}>Max: ₹50L</Text>
+                <Text style={styles.loanTypeRate}>From 11.5% p.a.</Text>
               </View>
             </View>
+            
             <View style={styles.loanTypeCard}>
-              <Text style={styles.loanTypeIcon}>🚗</Text>
+              <Text style={styles.loanTypeIcon}>🎓</Text>
               <View style={styles.loanTypeInfo}>
-                <Text style={styles.loanTypeName}>Auto Loan</Text>
-                <Text style={styles.loanTypeDesc}>Quick disbursal for vehicle purchases</Text>
+                <Text style={styles.loanTypeName}>Education Loan</Text>
+                <Text style={styles.loanTypeDesc}>Finance your education dreams up to ₹20L</Text>
+              </View>
+              <View style={styles.loanTypeDetails}>
+                <Text style={styles.loanTypeAmount}>Max: ₹20L</Text>
+                <Text style={styles.loanTypeRate}>From 9.5% p.a.</Text>
               </View>
             </View>
+            
+            <View style={styles.loanTypeCard}>
+              <Text style={styles.loanTypeIcon}>🆘</Text>
+              <View style={styles.loanTypeInfo}>
+                <Text style={styles.loanTypeName}>Emergency Loan</Text>
+                <Text style={styles.loanTypeDesc}>Quick funds for emergencies up to ₹5L</Text>
+              </View>
+              <View style={styles.loanTypeDetails}>
+                <Text style={styles.loanTypeAmount}>Max: ₹5L</Text>
+                <Text style={styles.loanTypeRate}>From 12% p.a.</Text>
+              </View>
+            </View>
+          </ScrollView>
+        </Animated.View>
+
+        {/* Trust & Credibility Section */}
+        <Animated.View 
+          style={[{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }, { marginTop: 32 }]}
+        >
+          <View style={styles.trustSection}>
+            <View style={styles.trustStatsContainer}>
+              <View style={styles.trustStatItem}>
+                <Text style={styles.trustStatValue}>50,000+</Text>
+                <Text style={styles.trustStatLabel}>Happy Users</Text>
+              </View>
+              <View style={styles.trustStatItem}>
+                <Text style={styles.trustStatValue}>₹10 Cr+</Text>
+                <Text style={styles.trustStatLabel}>Loans Processed</Text>
+              </View>
+            </View>
+            <Text style={styles.trustStatement}>Trusted by thousands of customers nationwide with a commitment to transparency and security.</Text>
           </View>
         </Animated.View>
 
@@ -115,8 +216,9 @@ export default function Overview() {
             onPress={() => router.push('/(auth)/signup')}
             activeOpacity={0.8}
           >
-            <Text style={styles.continueButtonText}>Continue to Sign Up</Text>
+            <Text style={styles.continueButtonText}>Start Your Loan Journey</Text>
           </TouchableOpacity>
+          <Text style={styles.ctaSubtext}>Start your loan journey in just a few steps</Text>
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
@@ -192,8 +294,74 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
+  servicesScroll: {
+    marginHorizontal: -20,
+    paddingHorizontal: 20,
+    marginTop: 16,
+  },
+  serviceCard: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    padding: 20,
+    marginRight: 16,
+    width: 250,
+  },
+  serviceIcon: {
+    fontSize: 32,
+    marginBottom: 12,
+  },
+  serviceTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 6,
+  },
+  serviceDesc: {
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 20,
+  },
   loanTypesContainer: {
     marginTop: 24,
+  },
+  trustSection: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+  },
+  trustStatsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 16,
+  },
+  trustStatItem: {
+    alignItems: 'center',
+  },
+  trustStatValue: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#2563EB',
+    marginBottom: 4,
+  },
+  trustStatLabel: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  trustStatement: {
+    fontSize: 14,
+    color: '#374151',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  ctaSubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginTop: 12,
+    fontWeight: '500',
   },
   sectionTitle: {
     fontSize: 20,
@@ -201,13 +369,32 @@ const styles = StyleSheet.create({
     color: '#111827',
     marginBottom: 16,
   },
+  loanTypesScroll: {
+    marginHorizontal: -20,
+    paddingHorizontal: 20,
+  },
   loanTypeCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
     backgroundColor: '#F9FAFB',
     borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
+    marginRight: 16,
+    width: 280,
+  },
+  loanTypeDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  loanTypeAmount: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  loanTypeRate: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#059669',
   },
   loanTypeIcon: {
     fontSize: 24,

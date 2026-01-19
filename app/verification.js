@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Animated, Image } from 'react-native';
 import { router } from 'expo-router';
+import { useEffect, useRef } from 'react';
+import { Animated, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Verification() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -34,6 +34,30 @@ export default function Verification() {
             <Text style={styles.brandName}>ElitePaisa</Text>
             <Text style={styles.title}>Complete Your KYC</Text>
             <Text style={styles.subtitle}>Verify your identity to unlock higher loan limits</Text>
+            
+            {/* Step Progress Indicator */}
+            <View style={styles.stepIndicatorContainer}>
+              <View style={styles.stepContainer}>
+                <View style={[styles.stepCircle, styles.activeStep]}>
+                  <Text style={styles.stepNumber}>1</Text>
+                </View>
+                <Text style={[styles.stepLabel, styles.activeStepLabel]}>PAN</Text>
+              </View>
+              <View style={styles.stepConnector} />
+              <View style={styles.stepContainer}>
+                <View style={styles.stepCircle}>
+                  <Text style={styles.stepNumber}>2</Text>
+                </View>
+                <Text style={styles.stepLabel}>Aadhaar</Text>
+              </View>
+              <View style={styles.stepConnector} />
+              <View style={styles.stepContainer}>
+                <View style={styles.stepCircle}>
+                  <Text style={styles.stepNumber}>3</Text>
+                </View>
+                <Text style={styles.stepLabel}>Photo</Text>
+              </View>
+            </View>
           </View>
         </Animated.View>
 
@@ -51,6 +75,7 @@ export default function Verification() {
                 <View>
                   <Text style={styles.verificationTitle}>PAN Card</Text>
                   <Text style={styles.verificationSubtitle}>Verify your PAN for identity</Text>
+                  <Text style={styles.verificationDescription}>PAN card is mandatory for loan verification and tax compliance</Text>
                 </View>
               </View>
               
@@ -67,35 +92,50 @@ export default function Verification() {
                 <View>
                   <Text style={styles.verificationTitle}>Aadhaar</Text>
                   <Text style={styles.verificationSubtitle}>Verify your Aadhaar for address</Text>
+                  <Text style={styles.verificationDescription}>Aadhaar verification confirms your identity and address</Text>
                 </View>
               </View>
               
               <View style={styles.statusContainer}>
-                <Text style={styles.statusText}>Verified</Text>
-                <Text style={styles.statusIcon}>✅</Text>
+                <Text style={styles.statusText}>Pending</Text>
+                <Text style={styles.statusIcon}>⏳</Text>
               </View>
             </View>
 
-            {/* Image Upload */}
-            <View style={styles.uploadCard}>
-              <Text style={styles.uploadTitle}>Upload Documents</Text>
-              <Text style={styles.uploadSubtitle}>Submit clear photos of your documents</Text>
-              
-              <View style={styles.imagePreviewContainer}>
-                <View style={styles.imagePlaceholder}>
-                  <Text style={styles.imageIcon}>📷</Text>
-                  <Text style={styles.imageText}>Selfie Photo</Text>
-                </View>
-                
-                <View style={styles.imagePlaceholder}>
-                  <Text style={styles.imageIcon}>📄</Text>
-                  <Text style={styles.imageText}>Income Proof</Text>
+            {/* Selfie Verification */}
+            <View style={styles.verificationCard}>
+              <View style={styles.verificationHeader}>
+                <Text style={styles.verificationIcon}>📸</Text>
+                <View>
+                  <Text style={styles.verificationTitle}>Selfie Verification</Text>
+                  <Text style={styles.verificationSubtitle}>Take a selfie with your document</Text>
+                  <Text style={styles.verificationDescription}>Face verification ensures authenticity of the applicant</Text>
                 </View>
               </View>
               
-              <TouchableOpacity style={styles.uploadButton}>
-                <Text style={styles.uploadButtonText}>Upload Documents</Text>
-              </TouchableOpacity>
+              <View style={styles.statusContainer}>
+                <Text style={styles.statusText}>Pending</Text>
+                <Text style={styles.statusIcon}>⏳</Text>
+              </View>
+            </View>
+
+            {/* Info Section */}
+            <View style={styles.infoSection}>
+              <Text style={styles.infoTitle}>Why verification matters?</Text>
+              <View style={styles.infoList}>
+                <View style={styles.infoItem}>
+                  <Text style={styles.infoBullet}>•</Text>
+                  <Text style={styles.infoText}>Prevents fraud and identity theft</Text>
+                </View>
+                <View style={styles.infoItem}>
+                  <Text style={styles.infoBullet}>•</Text>
+                  <Text style={styles.infoText}>Enables faster loan approval</Text>
+                </View>
+                <View style={styles.infoItem}>
+                  <Text style={styles.infoBullet}>•</Text>
+                  <Text style={styles.infoText}>Complies with regulatory requirements</Text>
+                </View>
+              </View>
             </View>
           </View>
         </Animated.View>
@@ -181,6 +221,89 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginTop: 4,
+  },
+  verificationDescription: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginTop: 4,
+    fontWeight: '400',
+  },
+  stepIndicatorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  stepContainer: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  stepCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#E5E7EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  activeStep: {
+    backgroundColor: '#2563EB',
+  },
+  stepNumber: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  stepLabel: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    fontWeight: '500',
+  },
+  activeStepLabel: {
+    color: '#2563EB',
+  },
+  stepConnector: {
+    flex: 1,
+    height: 2,
+    backgroundColor: '#E5E7EB',
+    position: 'absolute',
+    top: 16,
+    left: 30,
+    right: 30,
+    zIndex: -1,
+  },
+  infoSection: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    padding: 20,
+    marginTop: 20,
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  infoList: {
+    gap: 8,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  infoBullet: {
+    fontSize: 14,
+    color: '#2563EB',
+    marginRight: 8,
+    marginTop: 2,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 20,
+    flex: 1,
   },
   statusContainer: {
     flexDirection: 'row',

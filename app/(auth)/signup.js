@@ -1,10 +1,14 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Animated, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Signup() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+  
+  const [showPassword, setShowPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     Animated.parallel([
@@ -17,174 +21,467 @@ export default function Signup() {
         toValue: 0,
         duration: 800,
         useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
       })
     ]).start();
   }, []);
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <SafeAreaView style={styles.container}>
-        <Animated.View 
-          style={[
-            styles.contentContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }]
-            }
-          ]}
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      
+      <KeyboardAvoidingView 
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.headerSection}>
+          {/* Header Section */}
+          <Animated.View 
+            style={[
+              styles.headerSection,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }]
+              }
+            ]}
+          >
+            <View style={styles.logoContainer}>
+              <View style={styles.logoCircle}>
+                <Text style={styles.logoText}>EP</Text>
+              </View>
+            </View>
+            
             <Text style={styles.brandName}>ElitePaisa</Text>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join thousands who trust us with their finances</Text>
-          </View>
+            <Text style={styles.subtitle}>Start your journey to financial freedom</Text>
+          </Animated.View>
 
-          <View style={styles.formContainer}>
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>Full Name</Text>
-              <TextInput 
-                placeholder="Enter your full name" 
-                style={styles.input} 
-                placeholderTextColor="#9CA3AF"
-              />
+          {/* Benefits Section */}
+          <Animated.View 
+            style={[
+              {
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }]
+              },
+              { marginTop: 24 }
+            ]}
+          >
+            <View style={styles.benefitsContainer}>
+              <View style={styles.benefitItem}>
+                <Text style={styles.benefitIcon}>⚡</Text>
+                <Text style={styles.benefitText}>Quick Approval</Text>
+              </View>
+              <View style={styles.benefitItem}>
+                <Text style={styles.benefitIcon}>🔒</Text>
+                <Text style={styles.benefitText}>100% Secure</Text>
+              </View>
+              <View style={styles.benefitItem}>
+                <Text style={styles.benefitIcon}>💰</Text>
+                <Text style={styles.benefitText}>Best Rates</Text>
+              </View>
+            </View>
+          </Animated.View>
+
+          {/* Form Section */}
+          <Animated.View 
+            style={[
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }]
+              },
+              { marginTop: 32 }
+            ]}
+          >
+            <View style={styles.formCard}>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>Full Name</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>👤</Text>
+                  <TextInput 
+                    placeholder="Enter your full name" 
+                    style={styles.input} 
+                    placeholderTextColor="#9CA3AF"
+                  />
+                </View>
+              </View>
+              
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>Mobile Number</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>📱</Text>
+                  <TextInput 
+                    placeholder="Enter mobile number" 
+                    style={styles.input} 
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="phone-pad"
+                    maxLength={10}
+                  />
+                </View>
+                <Text style={styles.helperText}>We'll send OTP for verification</Text>
+              </View>
+              
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>Email Address</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>📧</Text>
+                  <TextInput 
+                    placeholder="your.email@example.com" 
+                    style={styles.input} 
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+              </View>
+              
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>Password</Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputIcon}>🔐</Text>
+                  <TextInput 
+                    placeholder="Create a strong password" 
+                    secureTextEntry={!showPassword}
+                    style={styles.input} 
+                    placeholderTextColor="#9CA3AF"
+                  />
+                  <TouchableOpacity 
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeButton}
+                  >
+                    <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.passwordStrength}>
+                  <View style={[styles.strengthBar, styles.strengthWeak]} />
+                  <View style={styles.strengthBar} />
+                  <View style={styles.strengthBar} />
+                  <View style={styles.strengthBar} />
+                </View>
+                <Text style={styles.helperText}>At least 8 characters with letters & numbers</Text>
+              </View>
+
+              {/* Terms & Conditions */}
+              <TouchableOpacity 
+                style={styles.checkboxContainer}
+                onPress={() => setAgreedToTerms(!agreedToTerms)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
+                  {agreedToTerms && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={styles.checkboxText}>
+                  I agree to the{' '}
+                  <Text style={styles.linkText}>Terms & Conditions</Text>
+                  {' '}and{' '}
+                  <Text style={styles.linkText}>Privacy Policy</Text>
+                </Text>
+              </TouchableOpacity>
+
+              {/* Create Account Button */}
+              <TouchableOpacity
+                style={[styles.button, !agreedToTerms && styles.buttonDisabled]}
+                onPress={() => {
+                  if (agreedToTerms) {
+                    router.push('/verification');
+                  }
+                }}
+                activeOpacity={0.8}
+                disabled={!agreedToTerms}
+              >
+                <Text style={styles.buttonText}>Create Account</Text>
+                <Text style={styles.buttonIcon}>→</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+
+          {/* Divider */}
+          <Animated.View 
+            style={[
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }]
+              },
+              { marginTop: 32 }
+            ]}
+          >
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or continue with</Text>
+              <View style={styles.dividerLine} />
+            </View>
+          </Animated.View>
+
+          {/* Social Login */}
+          <Animated.View 
+            style={[
+              {
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }]
+              },
+              { marginTop: 24 }
+            ]}
+          >
+            <View style={styles.socialContainer}>
+              <TouchableOpacity style={styles.socialButton}>
+                <Text style={styles.socialIcon}>🔵</Text>
+                <Text style={styles.socialText}>Google</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.socialButton}>
+                <Text style={styles.socialIcon}>📘</Text>
+                <Text style={styles.socialText}>Facebook</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+
+          {/* Sign In Link */}
+          <Animated.View 
+            style={[
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }]
+              },
+              { marginTop: 32, marginBottom: 40 }
+            ]}
+          >
+            <View style={styles.signinContainer}>
+              <Text style={styles.signinText}>Already have an account? </Text>
+              <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
+                <Text style={styles.signinLink}>Sign In</Text>
+              </TouchableOpacity>
             </View>
             
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>Mobile Number</Text>
-              <TextInput 
-                placeholder="Enter your mobile number" 
-                style={styles.input} 
-                placeholderTextColor="#9CA3AF"
-                keyboardType="phone-pad"
-                maxLength={10}
-              />
+            <View style={styles.trustBadge}>
+              <Text style={styles.trustIcon}>🔒</Text>
+              <Text style={styles.trustText}>Your data is encrypted & protected</Text>
             </View>
-            
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>Email Address</Text>
-              <TextInput 
-                placeholder="your.email@example.com" 
-                style={styles.input} 
-                placeholderTextColor="#9CA3AF"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-            
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>Password</Text>
-              <TextInput 
-                placeholder="Create a strong password" 
-                secureTextEntry 
-                style={styles.input} 
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push('/verification')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.buttonText}>Create Account</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.footerContainer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-              <Text style={styles.loginLink}>Sign In</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
   },
-  contentContainer: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'space-between',
+  scrollContent: {
+    padding: 20,
+    paddingTop: 40,
   },
   headerSection: {
-    marginTop: 20,
-    marginBottom: 32,
+    alignItems: 'center',
+  },
+  logoContainer: {
+    marginBottom: 16,
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#2563EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  logoText: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#FFFFFF',
   },
   brandName: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 28,
+    fontWeight: '900',
     color: '#2563EB',
     marginBottom: 8,
     letterSpacing: -0.5,
   },
   title: {
     fontSize: 32,
-    fontWeight: '800',
+    fontWeight: '900',
     color: '#111827',
-    marginBottom: 12,
-    letterSpacing: -0.5,
+    marginBottom: 8,
+    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
     color: '#6B7280',
-    lineHeight: 24,
-    fontWeight: '400',
+    textAlign: 'center',
+    fontWeight: '500',
   },
-  formContainer: {
-    gap: 20,
+  benefitsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  benefitItem: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  benefitIcon: {
+    fontSize: 24,
+  },
+  benefitText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#374151',
+  },
+  formCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   inputWrapper: {
-    gap: 8,
+    marginBottom: 20,
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#374151',
-    marginLeft: 4,
+    marginBottom: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputIcon: {
+    fontSize: 20,
+    marginRight: 12,
   },
   input: {
-    height: 52,
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    flex: 1,
     fontSize: 16,
-    backgroundColor: '#FFFFFF',
     color: '#111827',
+    fontWeight: '600',
+  },
+  eyeButton: {
+    padding: 4,
+  },
+  eyeIcon: {
+    fontSize: 20,
+  },
+  helperText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 8,
     fontWeight: '500',
+  },
+  passwordStrength: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 12,
+  },
+  strengthBar: {
+    flex: 1,
+    height: 4,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 2,
+  },
+  strengthWeak: {
+    backgroundColor: '#EF4444',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+    marginTop: 8,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#D1D5DB',
+    marginRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  checkboxChecked: {
+    backgroundColor: '#2563EB',
+    borderColor: '#2563EB',
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  checkboxText: {
+    fontSize: 14,
+    color: '#6B7280',
+    flex: 1,
+    lineHeight: 20,
+    fontWeight: '500',
+  },
+  linkText: {
+    color: '#2563EB',
+    fontWeight: '700',
   },
   button: {
     backgroundColor: '#2563EB',
-    height: 52,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 14,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
     elevation: 4,
     shadowColor: '#2563EB',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
+  },
+  buttonDisabled: {
+    backgroundColor: '#D1D5DB',
+    elevation: 0,
+    shadowOpacity: 0,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: 0.2,
+    fontSize: 17,
+    fontWeight: '800',
+    marginRight: 8,
+  },
+  buttonIcon: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
   },
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 16,
   },
   dividerLine: {
     flex: 1,
@@ -194,37 +491,66 @@ const styles = StyleSheet.create({
   dividerText: {
     fontSize: 14,
     color: '#9CA3AF',
-    fontWeight: '500',
+    fontWeight: '600',
     marginHorizontal: 16,
   },
-  googleButton: {
-    height: 52,
-    borderRadius: 12,
+  socialContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  socialButton: {
+    flex: 1,
+    flexDirection: 'row',
+    height: 56,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: '#E5E7EB',
     backgroundColor: '#FFFFFF',
   },
-  googleButtonText: {
-    color: '#374151',
-    fontSize: 16,
-    fontWeight: '600',
+  socialIcon: {
+    fontSize: 20,
+    marginRight: 8,
   },
-  footerContainer: {
+  socialText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#374151',
+  },
+  signinContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 24,
+    marginBottom: 16,
   },
-  footerText: {
+  signinText: {
     fontSize: 16,
     color: '#6B7280',
-    fontWeight: '400',
+    fontWeight: '500',
   },
-  loginLink: {
+  signinLink: {
     fontSize: 16,
     color: '#2563EB',
-    fontWeight: '600',
+    fontWeight: '800',
+  },
+  trustBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0FDF4',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignSelf: 'center',
+  },
+  trustIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  trustText: {
+    fontSize: 13,
+    color: '#059669',
+    fontWeight: '700',
   },
 });

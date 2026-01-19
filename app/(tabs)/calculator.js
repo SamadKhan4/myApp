@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Animated, StatusBar, Dimensions } from 'react-native';
 import { router } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -198,6 +198,7 @@ export default function Calculator() {
               <>
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Loan Amount (₹)</Text>
+                  <Text style={styles.helperText}>Enter the desired loan amount you wish to borrow</Text>
                   <View style={styles.inputWrapper}>
                     <Text style={styles.inputPrefix}>₹</Text>
                     <TextInput
@@ -213,6 +214,7 @@ export default function Calculator() {
                 
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Interest Rate (% p.a.)</Text>
+                  <Text style={styles.helperText}>Annual interest rate charged by the lender</Text>
                   <View style={styles.inputWrapper}>
                     <Text style={styles.inputPrefix}>%</Text>
                     <TextInput
@@ -228,6 +230,7 @@ export default function Calculator() {
                 
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Loan Tenure (Years)</Text>
+                  <Text style={styles.helperText}>Duration for which you will repay the loan</Text>
                   <View style={styles.inputWrapper}>
                     <Text style={styles.inputPrefix}>📅</Text>
                     <TextInput
@@ -255,6 +258,7 @@ export default function Calculator() {
               <>
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Monthly EMI (₹)</Text>
+                  <Text style={styles.helperText}>Enter the EMI amount you can afford to pay</Text>
                   <View style={styles.inputWrapper}>
                     <Text style={styles.inputPrefix}>₹</Text>
                     <TextInput
@@ -270,6 +274,7 @@ export default function Calculator() {
                 
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Interest Rate (% p.a.)</Text>
+                  <Text style={styles.helperText}>Annual interest rate charged by the lender</Text>
                   <View style={styles.inputWrapper}>
                     <Text style={styles.inputPrefix}>%</Text>
                     <TextInput
@@ -285,6 +290,7 @@ export default function Calculator() {
                 
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Loan Tenure (Years)</Text>
+                  <Text style={styles.helperText}>Duration for which you will repay the loan</Text>
                   <View style={styles.inputWrapper}>
                     <Text style={styles.inputPrefix}>📅</Text>
                     <TextInput
@@ -328,8 +334,10 @@ export default function Calculator() {
                   <Text style={styles.resultBadgeText}>Calculated</Text>
                 </View>
               </View>
-              
+                          
               <Text style={styles.resultValue}>₹ {formatCurrency(result)}</Text>
+                          
+              <Text style={styles.helperText}>This is an estimated {activeTab === 'emi' ? 'monthly EMI' : 'loan amount'} based on your inputs</Text>
               
               <View style={styles.resultDivider} />
 
@@ -360,7 +368,11 @@ export default function Calculator() {
                   </View>
                 </View>
               </View>
-
+              
+              <View style={styles.noteContainer}>
+                <Text style={styles.noteText}>Note: Actual EMI may vary based on verification and final approval</Text>
+              </View>
+              
               {/* Pie Chart Representation */}
               <View style={styles.chartContainer}>
                 <View style={styles.chartLegend}>
@@ -607,6 +619,13 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginBottom: 10,
   },
+  helperText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 6,
+    fontWeight: '400',
+    marginLeft: 4,
+  },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -727,6 +746,20 @@ const styles = StyleSheet.create({
   },
   breakdownSeparator: {
     height: 16,
+  },
+  noteContainer: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#F59E0B',
+  },
+  noteText: {
+    fontSize: 13,
+    color: '#92400E',
+    fontWeight: '500',
+    textAlign: 'center',
   },
   chartContainer: {
     marginBottom: 20,

@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Modal, Animated, StatusBar, Dimensions } from 'react-native';
 import { router } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, Modal, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -15,7 +15,9 @@ const loanTypes = [
     color: '#8B5CF6',
     features: ['No collateral', 'Quick approval', 'Flexible tenure'],
     tenure: '12-60 months',
-    processing: '24 hours'
+    processing: '24 hours',
+    for: 'Individuals seeking quick funds for personal expenses, medical bills, travel, or other immediate needs',
+    benefits: ['Instant approval', 'Minimal documentation', 'Competitive rates']
   },
   { 
     id: 2, 
@@ -27,7 +29,9 @@ const loanTypes = [
     color: '#3B82F6',
     features: ['Low interest', 'Long tenure', 'Tax benefits'],
     tenure: '5-30 years',
-    processing: '3-5 days'
+    processing: '3-5 days',
+    for: 'Individuals looking to purchase, construct, or renovate their dream home',
+    benefits: ['Tax deductions', 'Long repayment tenure', 'Flexible EMI options']
   },
   { 
     id: 3, 
@@ -39,7 +43,9 @@ const loanTypes = [
     color: '#10B981',
     features: ['90% financing', 'Easy EMIs', 'Fast processing'],
     tenure: '12-84 months',
-    processing: '48 hours'
+    processing: '48 hours',
+    for: 'Individuals wanting to purchase new or used vehicles',
+    benefits: ['Up to 90% financing', 'Quick disbursal', 'Insurance included']
   },
   { 
     id: 4, 
@@ -51,7 +57,9 @@ const loanTypes = [
     color: '#F59E0B',
     features: ['Minimal documentation', 'Working capital', 'Flexible repayment'],
     tenure: '12-60 months',
-    processing: '2-3 days'
+    processing: '2-3 days',
+    for: 'Small and medium enterprises needing working capital or expansion funds',
+    benefits: ['No collateral for small amounts', 'Quick disbursal', 'Flexible repayment']
   },
   { 
     id: 5, 
@@ -63,7 +71,9 @@ const loanTypes = [
     color: '#06B6D4',
     features: ['Study abroad', 'Moratorium period', 'Parent co-borrower'],
     tenure: '5-15 years',
-    processing: '3-4 days'
+    processing: '3-4 days',
+    for: 'Students pursuing higher education in India or abroad',
+    benefits: ['Moratorium period', 'Tax benefits', 'Co-applicant option']
   },
   { 
     id: 6, 
@@ -75,7 +85,9 @@ const loanTypes = [
     color: '#EF4444',
     features: ['Instant approval', 'Safe custody', 'Prepayment option'],
     tenure: '3-36 months',
-    processing: 'Instant'
+    processing: 'Instant',
+    for: 'Individuals with gold jewelry who need quick funds',
+    benefits: ['Instant disbursal', 'Low documentation', 'Flexible tenure']
   },
 ];
 
@@ -144,13 +156,13 @@ export default function Loans() {
           <View style={styles.header}>
             <View>
               <Text style={styles.brandName}>ElitePaisa</Text>
-              <Text style={styles.title}>Explore Loans</Text>
+              <Text style={styles.title}>Explore Loan Options</Text>
             </View>
             <TouchableOpacity style={styles.filterButton}>
               <Text style={styles.filterIcon}>⚙️</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.subtitle}>Find the perfect loan solution tailored for you</Text>
+          <Text style={styles.subtitle}>Choose the loan that fits your needs</Text>
         </Animated.View>
 
         {/* Stats Cards */}
@@ -404,6 +416,25 @@ export default function Loans() {
                     </View>
                   </View>
 
+                  {/* Who It&apos;s For */}
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalSectionTitle}>Who It&apos;s For</Text>
+                    <Text style={styles.modalDescription}>{selectedLoan.for}</Text>
+                  </View>
+                  
+                  {/* Key Benefits */}
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalSectionTitle}>Key Benefits</Text>
+                    <View style={styles.featuresList}>
+                      {selectedLoan.benefits.map((benefit, index) => (
+                        <View key={index} style={styles.featureItem}>
+                          <View style={[styles.featureDot, { backgroundColor: selectedLoan.color }]} />
+                          <Text style={styles.featureText}>{benefit}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                  
                   {/* Required Documents */}
                   <View style={styles.modalSection}>
                     <Text style={styles.modalSectionTitle}>Required Documents</Text>
@@ -425,6 +456,11 @@ export default function Loans() {
                         <Text style={styles.documentText}>Bank Statement</Text>
                       </View>
                     </View>
+                  </View>
+                  
+                  {/* Disclaimer */}
+                  <View style={styles.disclaimerSection}>
+                    <Text style={styles.disclaimerText}>* Actual terms and conditions may vary based on your credit profile and final verification</Text>
                   </View>
                 </ScrollView>
                 
@@ -957,5 +993,21 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
+  },
+  disclaimerSection: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+    marginTop: 8,
+  },
+  disclaimerText: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontWeight: '400',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    marginTop: 8,
   },
 });

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Image, Dimensions } from 'react-native';
 import { router } from 'expo-router';
+import { useEffect } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -52,7 +52,12 @@ export default function Splash() {
         ]}
       >
         <Text style={styles.logo}>ElitePaisa</Text>
-        <Text style={styles.tagline}>Smart Financial Solutions</Text>
+        <Text style={styles.tagline}>Smart Loans. Simple Life.</Text>
+        
+        <Animated.View style={{ opacity: opacityValue }}>
+          <Text style={styles.loadingText}>Preparing your financial experience…</Text>
+          <Text style={styles.progressText}>Loading assets</Text>
+        </Animated.View>
       </Animated.View>
     </View>
   );
@@ -80,6 +85,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     fontWeight: '400',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#6B7280',
+    fontWeight: '400',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  progressText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    fontWeight: '300',
     textAlign: 'center',
   },
 });

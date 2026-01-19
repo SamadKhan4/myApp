@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Animated, Alert, StatusBar } from 'react-native';
 import { router } from 'expo-router';
+import { useEffect, useRef } from 'react';
+import { Alert, Animated, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const userData = {
   name: 'Samad Khan',
@@ -74,6 +74,17 @@ export default function Profile() {
     { icon: '📄', title: 'Documents', subtitle: 'View uploaded documents', onPress: () => alert('Documents') },
     { icon: '💬', title: 'Support', subtitle: 'Get help & contact us', onPress: () => alert('Support') },
     { icon: '⚙️', title: 'Settings', subtitle: 'App preferences', onPress: () => alert('Settings') },
+  ];
+  
+  const securityOptions = [
+    { icon: '🔐', title: 'Change Password', subtitle: 'Update your account password', onPress: () => alert('Change Password') },
+    { icon: '❓', title: 'Forgot Password', subtitle: 'Recover your account', onPress: () => alert('Forgot Password') },
+  ];
+  
+  const appInfoOptions = [
+    { icon: '📋', title: 'App Version', subtitle: 'v1.2.0', onPress: () => {} },
+    { icon: '📜', title: 'Terms & Conditions', subtitle: 'Legal terms and conditions', onPress: () => alert('Terms & Conditions') },
+    { icon: '📋', title: 'Privacy Policy', subtitle: 'Learn how we protect your data', onPress: () => alert('Privacy Policy') },
   ];
 
   return (
@@ -241,11 +252,35 @@ export default function Profile() {
                   <Text style={styles.infoValue}>{userData.mobile}</Text>
                 </View>
               </View>
+
+              <View style={styles.infoDivider} />
+
+              <View style={styles.infoItem}>
+                <View style={styles.infoIconContainer}>
+                  <Text style={styles.infoIcon}>📍</Text>
+                </View>
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Address</Text>
+                  <Text style={styles.infoValue}>{userData.address}</Text>
+                </View>
+              </View>
+
+              <View style={styles.infoDivider} />
+
+              <View style={styles.infoItem}>
+                <View style={styles.infoIconContainer}>
+                  <Text style={styles.infoIcon}>📮</Text>
+                </View>
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Pincode</Text>
+                  <Text style={styles.infoValue}>400001</Text>
+                </View>
+              </View>
             </View>
           </View>
         </Animated.View>
 
-        {/* KYC Information */}
+        {/* KYC Details */}
         <Animated.View 
           style={[{
             opacity: fadeAnim,
@@ -254,7 +289,7 @@ export default function Profile() {
         >
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>KYC Information</Text>
+              <Text style={styles.sectionTitle}>KYC Details</Text>
               <View style={styles.kycVerifiedBadge}>
                 <Text style={styles.kycVerifiedText}>✓ Verified</Text>
               </View>
@@ -287,11 +322,11 @@ export default function Profile() {
 
               <View style={styles.infoItem}>
                 <View style={styles.infoIconContainer}>
-                  <Text style={styles.infoIcon}>📍</Text>
+                  <Text style={styles.infoIcon}>📷</Text>
                 </View>
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Address</Text>
-                  <Text style={styles.infoValue}>{userData.address}</Text>
+                  <Text style={styles.infoLabel}>Verification Status</Text>
+                  <Text style={styles.infoValue}>Verified</Text>
                 </View>
               </View>
             </View>
@@ -373,6 +408,74 @@ export default function Profile() {
           </View>
         </Animated.View>
 
+        {/* Security Section */}
+        <Animated.View 
+          style={[{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }, { marginTop: 28 }]}
+        >
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Security</Text>
+            
+            <View style={styles.menuCard}>
+              {securityOptions.map((item, index) => (
+                <View key={index}>
+                  <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={item.onPress}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.menuIconContainer}>
+                      <Text style={styles.menuIcon}>{item.icon}</Text>
+                    </View>
+                    <View style={styles.menuContent}>
+                      <Text style={styles.menuTitle}>{item.title}</Text>
+                      <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                    </View>
+                    <Text style={styles.menuArrow}>→</Text>
+                  </TouchableOpacity>
+                  {index < securityOptions.length - 1 && <View style={styles.menuDivider} />}
+                </View>
+              ))}
+            </View>
+          </View>
+        </Animated.View>
+        
+        {/* App Info */}
+        <Animated.View 
+          style={[{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }, { marginTop: 28 }]}
+        >
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>App Info</Text>
+            
+            <View style={styles.menuCard}>
+              {appInfoOptions.map((item, index) => (
+                <View key={index}>
+                  <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={item.onPress}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.menuIconContainer}>
+                      <Text style={styles.menuIcon}>{item.icon}</Text>
+                    </View>
+                    <View style={styles.menuContent}>
+                      <Text style={styles.menuTitle}>{item.title}</Text>
+                      <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                    </View>
+                    <Text style={styles.menuArrow}>→</Text>
+                  </TouchableOpacity>
+                  {index < appInfoOptions.length - 1 && <View style={styles.menuDivider} />}
+                </View>
+              ))}
+            </View>
+          </View>
+        </Animated.View>
+        
         {/* Action Buttons */}
         <Animated.View 
           style={[{

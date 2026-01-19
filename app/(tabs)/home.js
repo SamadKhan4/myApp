@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Animated, StatusBar, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
+import { Animated, Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { dashboardData } from '../../src/constants/loanData';
 
 const { width } = Dimensions.get('window');
@@ -65,8 +65,8 @@ export default function Home() {
           </View>
 
           <View style={styles.greetingContainer}>
-            <Text style={styles.greeting}>Good Morning,</Text>
-            <Text style={styles.userName}>Samad 👋</Text>
+            <Text style={styles.greeting}>Good Morning, User 👋</Text>
+            <Text style={styles.subGreeting}>Here&apos;s a snapshot of your loan options</Text>
           </View>
         </Animated.View>
 
@@ -129,6 +129,31 @@ export default function Home() {
           </View>
         </Animated.View>
 
+        {/* Loan Eligibility Preview */}
+        <Animated.View 
+          style={[{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }, { marginTop: 20 }]}
+        >
+          <View style={styles.eligibilityCard}>
+            <View style={styles.eligibilityHeader}>
+              <Text style={styles.eligibilityTitle}>Your Eligibility</Text>
+              <Text style={styles.eligibilityScore}>780</Text>
+            </View>
+            <Text style={styles.eligibilityMessage}>You are eligible for loans up to ₹50,000</Text>
+            <View style={styles.eligibilityBarContainer}>
+              <View style={styles.eligibilityBar}>
+                <View style={[styles.eligibilityFill, { width: '78%' }]} />
+              </View>
+              <View style={styles.eligibilityLabels}>
+                <Text style={styles.eligibilityLabel}>Low</Text>
+                <Text style={styles.eligibilityLabel}>High</Text>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
+        
         {/* Loan Offers Banner */}
         <Animated.View 
           style={[{
@@ -317,6 +342,32 @@ export default function Home() {
           </View>
         </Animated.View>
 
+        {/* Tips & Insights */}
+        <Animated.View 
+          style={[{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }, { marginTop: 28 }]}
+        >
+          <View style={styles.tipsContainer}>
+            <Text style={styles.sectionTitle}>Tips & Insights</Text>
+            <View style={styles.tipsList}>
+              <View style={styles.tipCard}>
+                <Text style={styles.tipIcon}>💡</Text>
+                <Text style={styles.tipText}>Borrow responsibly and only what you can repay</Text>
+              </View>
+              <View style={styles.tipCard}>
+                <Text style={styles.tipIcon}>📊</Text>
+                <Text style={styles.tipText}>Choose EMI wisely based on your income</Text>
+              </View>
+              <View style={styles.tipCard}>
+                <Text style={styles.tipIcon}>⏰</Text>
+                <Text style={styles.tipText}>Avoid late payments to maintain good credit score</Text>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
+        
         {/* CTA Buttons */}
         <Animated.View 
           style={[{
@@ -429,6 +480,68 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#BFDBFE',
     marginBottom: 4,
+  },
+  subGreeting: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+  },
+  eligibilityCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+  },
+  eligibilityHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  eligibilityTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#6B7280',
+  },
+  eligibilityScore: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#10B981',
+  },
+  eligibilityMessage: {
+    fontSize: 15,
+    color: '#111827',
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  eligibilityBarContainer: {
+    marginTop: 12,
+  },
+  eligibilityBar: {
+    height: 8,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  eligibilityFill: {
+    height: '100%',
+    backgroundColor: '#10B981',
+    borderRadius: 4,
+  },
+  eligibilityLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  eligibilityLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontWeight: '500',
   },
   userName: {
     fontSize: 32,
@@ -795,6 +908,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     fontWeight: '500',
+  },
+  tipsContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  tipsList: {
+    gap: 12,
+  },
+  tipCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    padding: 16,
+    borderRadius: 16,
+  },
+  tipIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  tipText: {
+    fontSize: 14,
+    color: '#374151',
+    fontWeight: '600',
+    flex: 1,
   },
   applyButton: {
     backgroundColor: '#2563EB',
