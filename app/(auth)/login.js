@@ -70,20 +70,10 @@ export default function Login() {
 
             <TouchableOpacity
               style={styles.button}
-              onPress={() => router.replace('/(tabs)/home')}
+              onPress={() => router.replace('/overview')}
               activeOpacity={0.8}
             >
               <Text style={styles.buttonText}>Sign In</Text>
-            </TouchableOpacity>
-
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <TouchableOpacity style={styles.googleButton}>
-              <Text style={styles.googleButtonText}>Continue with Google</Text>
             </TouchableOpacity>
           </View>
 

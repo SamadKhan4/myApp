@@ -53,6 +53,17 @@ export default function Signup() {
             </View>
             
             <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>Mobile Number</Text>
+              <TextInput 
+                placeholder="Enter your mobile number" 
+                style={styles.input} 
+                placeholderTextColor="#9CA3AF"
+                keyboardType="phone-pad"
+                maxLength={10}
+              />
+            </View>
+            
+            <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Email Address</Text>
               <TextInput 
                 placeholder="your.email@example.com" 
@@ -75,20 +86,10 @@ export default function Signup() {
 
             <TouchableOpacity
               style={styles.button}
-              onPress={() => router.push('/(tabs)/home')}
+              onPress={() => router.push('/verification')}
               activeOpacity={0.8}
             >
               <Text style={styles.buttonText}>Create Account</Text>
-            </TouchableOpacity>
-
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <TouchableOpacity style={styles.googleButton}>
-              <Text style={styles.googleButtonText}>Continue with Google</Text>
             </TouchableOpacity>
           </View>
 
