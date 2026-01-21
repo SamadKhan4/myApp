@@ -1,6 +1,9 @@
+ 
+ 
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { signup } from '../../src/utils/auth';
 
 export default function Signup() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -9,6 +12,75 @@ export default function Signup() {
   
   const [showPassword, setShowPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phoneNo: '',
+    email: '',
+    password: ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSignup = async () => {
+    // Validation
+    if (!formData.fullName.trim()) {
+      Alert.alert('Error', 'Please enter your full name');
+      return;
+    }
+    
+    if (!formData.phoneNo.trim() || formData.phoneNo.length !== 10) {
+      Alert.alert('Error', 'Please enter a valid 10-digit mobile number');
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      Alert.alert('Error', 'Please enter your email address');
+      return;
+    }
+    
+    if (!formData.password.trim() || formData.password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
+      return;
+    }
+    
+    if (!agreedToTerms) {
+      Alert.alert('Error', 'Please agree to Terms & Conditions');
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const userData = {
+        fullName: formData.fullName.trim(),
+        phoneNo: formData.phoneNo.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password.trim(),
+        role: 'client'
+      };
+      
+      const result = await signup(userData);
+      
+      if (result.success) {
+        // Signup successful, navigate to login
+        router.push('/(auth)/login');
+      } else {
+        // Signup failed
+        Alert.alert('Signup Failed', result.error || 'Unable to create account');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+      console.error('Signup error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     Animated.parallel([
@@ -110,6 +182,8 @@ export default function Signup() {
                     placeholder="Enter your full name" 
                     style={styles.input} 
                     placeholderTextColor="#9CA3AF"
+                    value={formData.fullName}
+                    onChangeText={(text) => handleInputChange('fullName', text)}
                   />
                 </View>
               </View>
@@ -124,9 +198,11 @@ export default function Signup() {
                     placeholderTextColor="#9CA3AF"
                     keyboardType="phone-pad"
                     maxLength={10}
+                    value={formData.phoneNo}
+                    onChangeText={(text) => handleInputChange('phoneNo', text)}
                   />
                 </View>
-                <Text style={styles.helperText}>We'll send OTP for verification</Text>
+                <Text style={styles.helperText}>We all send you an OTP for verification</Text>
               </View>
               
               <View style={styles.inputWrapper}>
@@ -139,6 +215,8 @@ export default function Signup() {
                     placeholderTextColor="#9CA3AF"
                     keyboardType="email-address"
                     autoCapitalize="none"
+                    value={formData.email}
+                    onChangeText={(text) => handleInputChange('email', text)}
                   />
                 </View>
               </View>
@@ -152,6 +230,8 @@ export default function Signup() {
                     secureTextEntry={!showPassword}
                     style={styles.input} 
                     placeholderTextColor="#9CA3AF"
+                    value={formData.password}
+                    onChangeText={(text) => handleInputChange('password', text)}
                   />
                   <TouchableOpacity 
                     onPress={() => setShowPassword(!showPassword)}
@@ -188,16 +268,14 @@ export default function Signup() {
 
               {/* Create Account Button */}
               <TouchableOpacity
-                style={[styles.button, !agreedToTerms && styles.buttonDisabled]}
-                onPress={() => {
-                  if (agreedToTerms) {
-                    router.push('/verification');
-                  }
-                }}
+                style={[styles.button, (!agreedToTerms || loading) && styles.buttonDisabled]}
+                onPress={handleSignup}
                 activeOpacity={0.8}
-                disabled={!agreedToTerms}
+                disabled={!agreedToTerms || loading}
               >
-                <Text style={styles.buttonText}>Create Account</Text>
+                <Text style={styles.buttonText}>
+                  {loading ? 'Creating Account...' : 'Create Account'}
+                </Text>
                 <Text style={styles.buttonIcon}>→</Text>
               </TouchableOpacity>
             </View>
@@ -294,10 +372,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    boxShadow: '0 4px 8px rgba(37, 99, 235, 0.3)',
   },
   logoText: {
     fontSize: 32,
@@ -331,10 +406,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)',
   },
   benefitItem: {
     alignItems: 'center',
@@ -353,10 +425,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 24,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
   },
   inputWrapper: {
     marginBottom: 20,

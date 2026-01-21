@@ -33,7 +33,7 @@ export default function Splash() {
         useNativeDriver: true,
       })
     ]).start(() => {
-      router.replace('/overview');
+      router.replace('/(auth)/login');
     });
 
     // Cleanup function to prevent memory leaks

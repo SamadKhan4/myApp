@@ -3,7 +3,25 @@ import { useEffect, useRef } from 'react';
 import { Animated, Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { dashboardData } from '../../src/constants/loanData';
 
-const { width } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Responsive scaling functions
+const scaleSize = (size) => {
+  // Base size for iPhone 14 Pro (393 x 852)
+  const baseWidth = 393;
+  const scale = SCREEN_WIDTH / baseWidth;
+  return Math.round(size * scale);
+};
+
+const scaleVertical = (size) => {
+  const baseHeight = 852;
+  const scale = SCREEN_HEIGHT / baseHeight;
+  return Math.round(size * scale);
+};
+
+const moderateScale = (size, factor = 0.5) => {
+  return size + (scaleSize(size) - size) * factor;
+};
 
 export default function Home() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -30,6 +48,7 @@ export default function Home() {
       })
     ]).start();
   }, []);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -75,7 +94,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ scale: scaleAnim }]
-          }, { marginTop: 24 }]}
+          }, { marginTop: scaleVertical(24) }]}
         >
           <View style={styles.loanCardContainer}>
             <View style={styles.loanCard}>
@@ -134,7 +153,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 20 }]}
+          }, { marginTop: scaleVertical(20) }]}
         >
           <View style={styles.eligibilityCard}>
             <View style={styles.eligibilityHeader}>
@@ -159,7 +178,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 20 }]}
+          }, { marginTop: scaleVertical(20) }]}
         >
           <View style={styles.offerBanner}>
             <View style={styles.offerContent}>
@@ -178,7 +197,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 28 }]}
+          }, { marginTop: scaleVertical(28) }]}
         >
           <View style={styles.quickActionsContainer}>
             <View style={styles.sectionHeader}>
@@ -192,7 +211,7 @@ export default function Home() {
               {dashboardData.quickActions.map((action, index) => (
                 <TouchableOpacity 
                   key={action.id} 
-                  style={styles.actionCard}
+                  style={[styles.actionCard, { width: `${100 / dashboardData.quickActions.length - 4}%` }]}
                   activeOpacity={0.7}
                   onPress={() => {
                     if (action.name === 'Apply Loan') {
@@ -217,7 +236,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 28 }]}
+          }, { marginTop: scaleVertical(28) }]}
         >
           <View style={styles.loanTypesContainer}>
             <View style={styles.sectionHeader}>
@@ -225,7 +244,7 @@ export default function Home() {
             </View>
             
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.loanTypesScroll}>
-              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#EEF2FF' }]}>
+              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#EEF2FF', width: SCREEN_WIDTH > 400 ? scaleSize(160) : scaleSize(140) }]}>
                 <View style={styles.loanTypeIcon}>
                   <Text style={styles.loanTypeEmoji}>🏠</Text>
                 </View>
@@ -234,7 +253,7 @@ export default function Home() {
                 <Text style={styles.loanTypeAmount}>Up to ₹50L</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#FEF3C7' }]}>
+              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#FEF3C7', width: SCREEN_WIDTH > 400 ? scaleSize(160) : scaleSize(140) }]}>
                 <View style={styles.loanTypeIcon}>
                   <Text style={styles.loanTypeEmoji}>💼</Text>
                 </View>
@@ -243,7 +262,7 @@ export default function Home() {
                 <Text style={styles.loanTypeAmount}>Up to ₹25L</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#ECFDF5' }]}>
+              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#ECFDF5', width: SCREEN_WIDTH > 400 ? scaleSize(160) : scaleSize(140) }]}>
                 <View style={styles.loanTypeIcon}>
                   <Text style={styles.loanTypeEmoji}>👤</Text>
                 </View>
@@ -252,7 +271,7 @@ export default function Home() {
                 <Text style={styles.loanTypeAmount}>Up to ₹15L</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#FEE2E2' }]}>
+              <TouchableOpacity style={[styles.loanTypeCard, { backgroundColor: '#FEE2E2', width: SCREEN_WIDTH > 400 ? scaleSize(160) : scaleSize(140) }]}>
                 <View style={styles.loanTypeIcon}>
                   <Text style={styles.loanTypeEmoji}>🎓</Text>
                 </View>
@@ -269,7 +288,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 28 }]}
+          }, { marginTop: scaleVertical(28) }]}
         >
           <View style={styles.recentActivityContainer}>
             <View style={styles.sectionHeader}>
@@ -302,7 +321,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 28 }]}
+          }, { marginTop: scaleVertical(28) }]}
         >
           <View style={styles.benefitsContainer}>
             <Text style={styles.sectionTitle}>Why Choose ElitePaisa?</Text>
@@ -347,7 +366,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 28 }]}
+          }, { marginTop: scaleVertical(28) }]}
         >
           <View style={styles.tipsContainer}>
             <Text style={styles.sectionTitle}>Tips & Insights</Text>
@@ -373,7 +392,7 @@ export default function Home() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 32, marginBottom: 100 }]}
+          }, { marginTop: scaleVertical(32), marginBottom: scaleVertical(100) }]}
         >
           <TouchableOpacity 
             style={styles.applyButton} 
@@ -403,7 +422,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 280,
+    height: Math.min(scaleVertical(280), SCREEN_HEIGHT * 0.4),
     backgroundColor: '#1E40AF',
     overflow: 'hidden',
   },
@@ -412,139 +431,139 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 280,
+    height: Math.min(scaleVertical(280), SCREEN_HEIGHT * 0.4),
     backgroundColor: '#2563EB',
     opacity: 0.8,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
+    paddingHorizontal: scaleSize(20),
+    paddingTop: scaleVertical(20),
+    paddingBottom: scaleVertical(40),
   },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: scaleVertical(20),
   },
   headerLeft: {
     flex: 1,
   },
   brandName: {
-    fontSize: 28,
+    fontSize: moderateScale(28),
     fontWeight: '900',
     color: '#FFFFFF',
     letterSpacing: -0.5,
   },
   brandTagline: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     color: '#BFDBFE',
-    marginTop: 2,
+    marginTop: scaleVertical(2),
     fontWeight: '500',
   },
   profileIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: scaleSize(48),
+    height: scaleSize(48),
+    borderRadius: scaleSize(24),
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
   },
   profileIcon: {
-    fontSize: 22,
+    fontSize: scaleSize(22),
   },
   notificationBadge: {
     position: 'absolute',
-    top: -2,
-    right: -2,
+    top: -scaleSize(2),
+    right: -scaleSize(2),
     backgroundColor: '#EF4444',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: scaleSize(20),
+    height: scaleSize(20),
+    borderRadius: scaleSize(10),
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: scaleSize(2),
     borderColor: '#1E40AF',
   },
   badgeText: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: moderateScale(11),
     fontWeight: '700',
   },
   greetingContainer: {
-    marginTop: 8,
+    marginTop: scaleVertical(8),
   },
   greeting: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: '500',
     color: '#BFDBFE',
-    marginBottom: 4,
+    marginBottom: scaleVertical(4),
   },
   subGreeting: {
-    fontSize: 24,
+    fontSize: moderateScale(24),
     fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: -0.5,
   },
   eligibilityCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: scaleSize(20),
+    padding: scaleSize(20),
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scaleSize(2) },
     shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowRadius: scaleSize(8),
   },
   eligibilityHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: scaleVertical(12),
   },
   eligibilityTitle: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: '700',
     color: '#6B7280',
   },
   eligibilityScore: {
-    fontSize: 24,
+    fontSize: moderateScale(24),
     fontWeight: '900',
     color: '#10B981',
   },
   eligibilityMessage: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     color: '#111827',
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: scaleVertical(12),
   },
   eligibilityBarContainer: {
-    marginTop: 12,
+    marginTop: scaleVertical(12),
   },
   eligibilityBar: {
-    height: 8,
+    height: scaleSize(8),
     backgroundColor: '#E5E7EB',
-    borderRadius: 4,
+    borderRadius: scaleSize(4),
     overflow: 'hidden',
-    marginBottom: 8,
+    marginBottom: scaleVertical(8),
   },
   eligibilityFill: {
     height: '100%',
     backgroundColor: '#10B981',
-    borderRadius: 4,
+    borderRadius: scaleSize(4),
   },
   eligibilityLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   eligibilityLabel: {
-    fontSize: 12,
+    fontSize: moderateScale(12),
     color: '#6B7280',
     fontWeight: '500',
   },
   userName: {
-    fontSize: 32,
+    fontSize: moderateScale(32),
     fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: -0.5,
@@ -554,13 +573,13 @@ const styles = StyleSheet.create({
   },
   loanCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
+    borderRadius: scaleSize(24),
+    padding: SCREEN_WIDTH < 380 ? scaleSize(16) : scaleSize(24),
     elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: scaleSize(4) },
     shadowOpacity: 0.1,
-    shadowRadius: 12,
+    shadowRadius: scaleSize(12),
     position: 'relative',
     overflow: 'hidden',
   },
@@ -573,79 +592,79 @@ const styles = StyleSheet.create({
   },
   patternCircle1: {
     position: 'absolute',
-    top: -40,
-    right: -40,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    top: -scaleSize(40),
+    right: -scaleSize(40),
+    width: scaleSize(150),
+    height: scaleSize(150),
+    borderRadius: scaleSize(75),
     backgroundColor: '#EEF2FF',
   },
   patternCircle2: {
     position: 'absolute',
-    bottom: -60,
-    left: -30,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    bottom: -scaleSize(60),
+    left: -scaleSize(30),
+    width: scaleSize(120),
+    height: scaleSize(120),
+    borderRadius: scaleSize(60),
     backgroundColor: '#DBEAFE',
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: scaleVertical(8),
   },
   loanLabel: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     color: '#6B7280',
     fontWeight: '600',
   },
   creditBadge: {
     backgroundColor: '#10B981',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: scaleSize(10),
+    paddingVertical: scaleSize(4),
+    borderRadius: scaleSize(12),
   },
   creditBadgeText: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: moderateScale(11),
     fontWeight: '700',
   },
   loanAmount: {
-    fontSize: 42,
+    fontSize: SCREEN_WIDTH < 380 ? moderateScale(36) : moderateScale(42),
     fontWeight: '900',
     color: '#111827',
-    marginBottom: 16,
-    letterSpacing: -1,
+    marginBottom: scaleVertical(16),
+    letterSpacing: -0.5,
   },
   progressContainer: {
-    marginBottom: 20,
+    marginBottom: scaleVertical(20),
   },
   progressBar: {
-    height: 8,
+    height: scaleSize(8),
     backgroundColor: '#E5E7EB',
-    borderRadius: 4,
+    borderRadius: scaleSize(4),
     overflow: 'hidden',
-    marginBottom: 8,
+    marginBottom: scaleVertical(8),
   },
   progressFill: {
     height: '100%',
     backgroundColor: '#2563EB',
-    borderRadius: 4,
+    borderRadius: scaleSize(4),
   },
   progressLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   progressText: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     color: '#6B7280',
     fontWeight: '600',
   },
   divider: {
-    height: 1,
+    height: scaleSize(1),
     backgroundColor: '#E5E7EB',
-    marginVertical: 20,
+    marginVertical: scaleVertical(20),
   },
   statsRow: {
     flexDirection: 'row',
@@ -657,66 +676,66 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statDivider: {
-    width: 1,
-    height: 40,
+    width: scaleSize(1),
+    height: scaleSize(40),
     backgroundColor: '#E5E7EB',
   },
   statValue: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: scaleVertical(4),
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: moderateScale(12),
     color: '#6B7280',
     fontWeight: '600',
   },
   viewDetailsButton: {
-    marginTop: 16,
+    marginTop: scaleVertical(16),
     alignItems: 'center',
   },
   viewDetailsText: {
     color: '#2563EB',
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: '700',
   },
   offerBanner: {
     backgroundColor: '#FEF3C7',
-    borderRadius: 16,
-    padding: 20,
-    borderLeftWidth: 4,
+    borderRadius: scaleSize(16),
+    padding: scaleSize(20),
+    borderLeftWidth: scaleSize(4),
     borderLeftColor: '#F59E0B',
   },
   offerContent: {
-    marginBottom: 12,
+    marginBottom: scaleVertical(12),
   },
   offerBadge: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     fontWeight: '700',
     color: '#B45309',
-    marginBottom: 6,
+    marginBottom: scaleVertical(6),
   },
   offerTitle: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: '800',
     color: '#78350F',
-    marginBottom: 4,
+    marginBottom: scaleVertical(4),
   },
   offerSubtitle: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     color: '#92400E',
     fontWeight: '500',
   },
   offerButton: {
     backgroundColor: '#F59E0B',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: scaleSize(12),
+    borderRadius: scaleSize(12),
     alignItems: 'center',
   },
   offerButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: '700',
   },
   quickActionsContainer: {
@@ -726,15 +745,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: scaleVertical(16),
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: moderateScale(22),
     fontWeight: '800',
     color: '#111827',
   },
   seeAllText: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#2563EB',
     fontWeight: '700',
   },
@@ -744,29 +763,29 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    paddingVertical: 24,
+    borderRadius: scaleSize(20),
+    paddingVertical: scaleVertical(24),
     alignItems: 'center',
     width: '31%',
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scaleSize(2) },
     shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowRadius: scaleSize(8),
   },
   actionIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: scaleSize(56),
+    height: scaleSize(56),
+    borderRadius: scaleSize(28),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: scaleVertical(12),
   },
   actionIcon: {
-    fontSize: 26,
+    fontSize: scaleSize(26),
   },
   actionLabel: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     fontWeight: '700',
     color: '#111827',
     textAlign: 'center',
@@ -775,46 +794,46 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   loanTypesScroll: {
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
+    marginHorizontal: -scaleSize(20),
+    paddingHorizontal: scaleSize(20),
   },
   loanTypeCard: {
-    width: 160,
-    padding: 20,
-    borderRadius: 20,
-    marginRight: 16,
+    width: scaleSize(160),
+    padding: scaleSize(20),
+    borderRadius: scaleSize(20),
+    marginRight: scaleSize(16),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scaleSize(2) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scaleSize(4),
   },
   loanTypeIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: scaleSize(52),
+    height: scaleSize(52),
+    borderRadius: scaleSize(26),
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: scaleVertical(12),
   },
   loanTypeEmoji: {
-    fontSize: 24,
+    fontSize: scaleSize(24),
   },
   loanTypeName: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 6,
+    marginBottom: scaleVertical(6),
   },
   loanTypeRate: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     fontWeight: '600',
     color: '#059669',
-    marginBottom: 4,
+    marginBottom: scaleVertical(4),
   },
   loanTypeAmount: {
-    fontSize: 12,
+    fontSize: moderateScale(12),
     color: '#6B7280',
     fontWeight: '600',
   },
@@ -825,37 +844,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 12,
+    padding: SCREEN_WIDTH < 380 ? scaleSize(12) : scaleSize(16),
+    borderRadius: scaleSize(16),
+    marginBottom: scaleVertical(12),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: scaleSize(1) },
     shadowOpacity: 0.05,
-    shadowRadius: 3,
+    shadowRadius: scaleSize(3),
   },
   activityIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: scaleSize(48),
+    height: scaleSize(48),
+    borderRadius: scaleSize(24),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+    marginRight: scaleSize(14),
   },
   activityIcon: {
-    fontSize: 22,
+    fontSize: scaleSize(22),
   },
   activityDetails: {
     flex: 1,
   },
   activityTitle: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: '700',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: scaleVertical(4),
   },
   activitySubtitle: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     color: '#6B7280',
     fontWeight: '500',
   },
@@ -863,119 +882,119 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   activityAmount: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 2,
+    marginBottom: scaleVertical(2),
   },
   activityArrow: {
-    fontSize: 16,
+    fontSize: scaleSize(16),
     color: '#2563EB',
     fontWeight: '700',
   },
   benefitsContainer: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: scaleSize(20),
+    padding: scaleSize(20),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scaleSize(2) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scaleSize(4),
   },
   benefitsList: {
-    marginTop: 16,
+    marginTop: scaleVertical(16),
   },
   benefitItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: scaleVertical(20),
   },
   benefitIcon: {
-    fontSize: 32,
-    marginRight: 16,
+    fontSize: scaleSize(32),
+    marginRight: scaleSize(16),
   },
   benefitContent: {
     flex: 1,
   },
   benefitTitle: {
-    fontSize: 16,
+    fontSize: moderateScale(16),
     fontWeight: '700',
     color: '#111827',
-    marginBottom: 2,
+    marginBottom: scaleVertical(2),
   },
   benefitDesc: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#6B7280',
     fontWeight: '500',
   },
   tipsContainer: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: scaleSize(20),
+    padding: scaleSize(20),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scaleSize(2) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scaleSize(4),
   },
   tipsList: {
-    gap: 12,
+    gap: scaleSize(12),
   },
   tipCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F9FAFB',
-    padding: 16,
-    borderRadius: 16,
+    padding: SCREEN_WIDTH < 380 ? scaleSize(12) : scaleSize(16),
+    borderRadius: scaleSize(16),
   },
   tipIcon: {
-    fontSize: 24,
-    marginRight: 12,
+    fontSize: scaleSize(24),
+    marginRight: scaleSize(12),
   },
   tipText: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#374151',
     fontWeight: '600',
     flex: 1,
   },
   applyButton: {
     backgroundColor: '#2563EB',
-    height: 60,
-    borderRadius: 16,
+    height: SCREEN_WIDTH < 380 ? scaleVertical(50) : scaleVertical(60),
+    borderRadius: scaleSize(16),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: scaleVertical(12),
     elevation: 4,
     shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: scaleSize(4) },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: scaleSize(8),
   },
   applyButtonText: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: moderateScale(17),
     fontWeight: '800',
-    marginRight: 8,
+    marginRight: scaleSize(8),
   },
   applyButtonIcon: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: scaleSize(20),
     fontWeight: '700',
   },
   secondaryButton: {
     backgroundColor: '#FFFFFF',
-    height: 60,
-    borderRadius: 16,
+    height: SCREEN_WIDTH < 380 ? scaleVertical(50) : scaleVertical(60),
+    borderRadius: scaleSize(16),
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
+    borderWidth: scaleSize(2),
     borderColor: '#2563EB',
   },
   secondaryButtonText: {
     color: '#2563EB',
-    fontSize: 17,
+    fontSize: moderateScale(17),
     fontWeight: '800',
   },
 });

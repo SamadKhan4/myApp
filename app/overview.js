@@ -1,10 +1,44 @@
 import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
-import { Animated, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import { getCurrentUser, isAuthenticated, logout } from '../src/utils/auth';
 
 export default function Overview() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const authStatus = await isAuthenticated();
+      if (authStatus) {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      } else {
+        // Not authenticated, redirect to login
+        router.replace('/(auth)/login');
+      }
+    } catch (error) {
+      console.error('Auth check error:', error);
+      router.replace('/(auth)/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace('/(auth)/login');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to logout');
+    }
+  };
 
   useEffect(() => {
     Animated.stagger(200, [
@@ -32,6 +66,20 @@ export default function Overview() {
         >
           <View style={styles.header}>
             <Text style={styles.brandName}>ElitePaisa</Text>
+            {user && (
+              <View style={styles.userHeader}>
+                <View>
+                  <Text style={styles.welcomeText}>Welcome back,</Text>
+                  <Text style={styles.userName}>{user.fullName || user.email}</Text>
+                </View>
+                <TouchableOpacity 
+                  style={styles.logoutButton}
+                  onPress={handleLogout}
+                >
+                  <Text style={styles.logoutText}>Logout</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </Animated.View>
 
@@ -213,7 +261,7 @@ export default function Overview() {
         >
           <TouchableOpacity 
             style={styles.continueButton}
-            onPress={() => router.push('/(auth)/signup')}
+            onPress={() => router.push('/(auth)/login')}
             activeOpacity={0.8}
           >
             <Text style={styles.continueButtonText}>Start Your Loan Journey</Text>
@@ -237,6 +285,38 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 20,
     alignItems: 'flex-start',
+  },
+  userHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 16,
+    padding: 16,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+  },
+  welcomeText: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '400',
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginTop: 2,
+  },
+  logoutButton: {
+    backgroundColor: '#EF4444',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  logoutText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   brandName: {
     fontSize: 24,

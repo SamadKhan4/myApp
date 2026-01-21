@@ -148,10 +148,10 @@ export default function Verification() {
         >
           <TouchableOpacity 
             style={styles.continueButton}
-            onPress={() => router.replace('/(tabs)/home')}
+            onPress={() => router.replace('/(auth)/login')}
             activeOpacity={0.8}
           >
-            <Text style={styles.continueButtonText}>Continue to Dashboard</Text>
+            <Text style={styles.continueButtonText}>Continue to Login</Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>

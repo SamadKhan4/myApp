@@ -1,10 +1,49 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Animated, KeyboardAvoidingView, Platform } from 'react-native';
+ 
+ 
 import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { login } from '../../src/utils/auth';
 
 export default function Login() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    // Validation
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email');
+      return;
+    }
+    
+    if (!password.trim()) {
+      Alert.alert('Error', 'Please enter your password');
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const result = await login(email.trim(), password.trim());
+      
+      if (result.success) {
+        // Login successful, navigate to home
+        router.replace('/(tabs)/home');
+      } else {
+        // Login failed
+        Alert.alert('Login Failed', result.error || 'Invalid credentials');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+      console.error('Login error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     Animated.parallel([
@@ -51,6 +90,8 @@ export default function Login() {
                 placeholderTextColor="#9CA3AF"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
             
@@ -61,19 +102,27 @@ export default function Login() {
                 secureTextEntry 
                 style={styles.input} 
                 placeholderTextColor="#9CA3AF"
+                value={password}
+                onChangeText={setPassword}
               />
             </View>
 
-            <TouchableOpacity style={styles.forgotPassword}>
+            <TouchableOpacity 
+              style={styles.forgotPassword}
+              onPress={() => router.push('/(auth)/forgot-password')}
+            >
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.replace('/overview')}
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleLogin}
               activeOpacity={0.8}
+              disabled={loading}
             >
-              <Text style={styles.buttonText}>Sign In</Text>
+              <Text style={styles.buttonText}>
+                {loading ? 'Signing In...' : 'Sign In'}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -163,10 +212,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
     elevation: 4,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    boxShadow: '0 4px 8px rgba(37, 99, 235, 0.2)',
+  },
+  buttonDisabled: {
+    backgroundColor: '#9CA3AF',
+    elevation: 0,
+    shadowOpacity: 0,
   },
   buttonText: {
     color: '#FFFFFF',
