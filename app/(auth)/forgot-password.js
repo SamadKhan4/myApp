@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { forgotPassword, resendOtp, resetPassword, verifyOtp } from '../../src/utils/auth';
 
 export default function ForgotPassword() {
@@ -302,6 +302,13 @@ export default function ForgotPassword() {
             >
               <Text style={styles.backIcon}>←</Text>
             </TouchableOpacity>
+            <View style={styles.logoContainer}>
+              <Image 
+                source={require('../../src/assets/Images/logo.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
+            </View>
             <Text style={styles.brandName}>ElitePaisa</Text>
           </View>
 
@@ -335,6 +342,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 32,
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: 40,
+    height: 40,
   },
   backButton: {
     padding: 8,

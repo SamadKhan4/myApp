@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -131,7 +131,14 @@ export default function Calculator() {
           }]}
         >
           <View style={styles.header}>
-            <View>
+            <View style={styles.headerLeft}>
+              <View style={styles.logoContainer}>
+                <Image 
+                  source={require('../../src/assets/Images/logo.png')}
+                  style={styles.logoImage}
+                  resizeMode="contain"
+                />
+              </View>
               <Text style={styles.brandName}>ElitePaisa</Text>
               <Text style={styles.title}>Loan Calculator</Text>
             </View>
@@ -504,6 +511,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginTop: 8,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  logoContainer: {
+    marginBottom: 8,
+  },
+  logoImage: {
+    width: 40,
+    height: 40,
   },
   brandName: {
     fontSize: 24,

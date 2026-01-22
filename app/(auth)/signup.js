@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
  
  
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { signup } from '../../src/utils/auth';
 
 export default function Signup() {
@@ -127,9 +128,11 @@ export default function Signup() {
             ]}
           >
             <View style={styles.logoContainer}>
-              <View style={styles.logoCircle}>
-                <Text style={styles.logoText}>EP</Text>
-              </View>
+              <Image 
+                source={require('../../src/assets/Images/logo.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
             </View>
             
             <Text style={styles.brandName}>ElitePaisa</Text>
@@ -378,6 +381,10 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '900',
     color: '#FFFFFF',
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
   },
   brandName: {
     fontSize: 28,

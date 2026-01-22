@@ -353,7 +353,14 @@ export default function Profile() {
           }]}
         >
           <View style={styles.header}>
-            <View>
+            <View style={styles.headerLeft}>
+              <View style={styles.logoContainer}>
+                <Image 
+                  source={require('../../src/assets/Images/logo.png')}
+                  style={styles.logoImage}
+                  resizeMode="contain"
+                />
+              </View>
               <Text style={styles.brandName}>ElitePaisa</Text>
               <Text style={styles.title}>My Profile</Text>
             </View>
@@ -726,6 +733,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 8,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  logoContainer: {
+    marginBottom: 8,
+  },
+  logoImage: {
+    width: 40,
+    height: 40,
   },
   brandName: {
     fontSize: 24,

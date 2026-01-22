@@ -2,7 +2,7 @@
  
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { login } from '../../src/utils/auth';
 
 export default function Login() {
@@ -76,6 +76,13 @@ export default function Login() {
           ]}
         >
           <View style={styles.headerSection}>
+            <View style={styles.logoContainer}>
+              <Image 
+                source={require('../../src/assets/Images/logo.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
+            </View>
             <Text style={styles.brandName}>ElitePaisa</Text>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Sign in to access your account</Text>
@@ -151,6 +158,14 @@ const styles = StyleSheet.create({
   headerSection: {
     marginTop: 20,
     marginBottom: 32,
+    alignItems: 'center',
+  },
+  logoContainer: {
+    marginBottom: 16,
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
   },
   brandName: {
     fontSize: 24,
