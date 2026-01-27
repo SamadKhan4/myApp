@@ -1,27 +1,8 @@
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { dashboardData } from '../../src/constants/loanData';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-// Responsive scaling functions
-const scaleSize = (size) => {
-  // Base size for iPhone 14 Pro (393 x 852)
-  const baseWidth = 393;
-  const scale = SCREEN_WIDTH / baseWidth;
-  return Math.round(size * scale);
-};
-
-const scaleVertical = (size) => {
-  const baseHeight = 852;
-  const scale = SCREEN_HEIGHT / baseHeight;
-  return Math.round(size * scale);
-};
-
-const moderateScale = (size, factor = 0.5) => {
-  return size + (scaleSize(size) - size) * factor;
-};
+import { wp, hp, scale, moderateScale, scaleFont, SCREEN_WIDTH, SCREEN_HEIGHT, isIOS, isAndroid, scaleSize, scaleVertical } from '../../src/utils/responsive';
 
 export default function Home() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -457,11 +438,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logoContainer: {
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   logoImage: {
-    width: 40,
-    height: 40,
+    width: scale(40),
+    height: scale(40),
   },
   brandName: {
     fontSize: moderateScale(28),
@@ -526,7 +507,7 @@ const styles = StyleSheet.create({
     padding: scaleSize(20),
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: scaleSize(2) },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.08,
     shadowRadius: scaleSize(8),
   },
@@ -591,7 +572,7 @@ const styles = StyleSheet.create({
     padding: SCREEN_WIDTH < 380 ? scaleSize(16) : scaleSize(24),
     elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: scaleSize(4) },
+    shadowOffset: { width: 0, height: hp(0.5) },
     shadowOpacity: 0.1,
     shadowRadius: scaleSize(12),
     position: 'relative',
@@ -783,7 +764,7 @@ const styles = StyleSheet.create({
     width: '31%',
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: scaleSize(2) },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.08,
     shadowRadius: scaleSize(8),
   },
@@ -818,7 +799,7 @@ const styles = StyleSheet.create({
     marginRight: scaleSize(16),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: scaleSize(2) },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.05,
     shadowRadius: scaleSize(4),
   },
@@ -863,7 +844,7 @@ const styles = StyleSheet.create({
     marginBottom: scaleVertical(12),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: scaleSize(1) },
+    shadowOffset: { width: 0, height: hp(0.125) },
     shadowOpacity: 0.05,
     shadowRadius: scaleSize(3),
   },
@@ -912,7 +893,7 @@ const styles = StyleSheet.create({
     padding: scaleSize(20),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: scaleSize(2) },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.05,
     shadowRadius: scaleSize(4),
   },
@@ -948,7 +929,7 @@ const styles = StyleSheet.create({
     padding: scaleSize(20),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: scaleSize(2) },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.05,
     shadowRadius: scaleSize(4),
   },
@@ -982,7 +963,7 @@ const styles = StyleSheet.create({
     marginBottom: scaleVertical(12),
     elevation: 4,
     shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: scaleSize(4) },
+    shadowOffset: { width: 0, height: hp(0.5) },
     shadowOpacity: 0.3,
     shadowRadius: scaleSize(8),
   },

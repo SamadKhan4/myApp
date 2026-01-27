@@ -289,7 +289,207 @@ class ApiService {
 
   // Logout
   static async logout() {
-    await this.clearAuthData();
+    return await this.makeRequest(
+      API_ENDPOINTS.AUTH.LOGOUT,
+      HTTP_METHODS.POST
+    );
+  }
+
+  // Loan Types API calls
+  static async createLoanType(loanTypeData) {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_TYPES.CREATE,
+      HTTP_METHODS.POST,
+      loanTypeData
+    );
+  }
+
+  static async getAllLoanTypes() {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_TYPES.GET_ALL
+    );
+  }
+
+  static async getLoanTypeById(id) {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_TYPES.GET_BY_ID(id)
+    );
+  }
+
+  static async updateLoanType(id, loanTypeData) {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_TYPES.UPDATE(id),
+      HTTP_METHODS.PUT,
+      loanTypeData
+    );
+  }
+
+  static async deleteLoanType(id) {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_TYPES.DELETE(id),
+      HTTP_METHODS.DELETE
+    );
+  }
+
+  // Loan Applications API calls
+  static async applyForLoan(applicationData) {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.APPLY,
+      HTTP_METHODS.POST,
+      applicationData
+    );
+  }
+
+  static async getMyLoanApplications() {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.GET_MY_APPLICATIONS
+    );
+  }
+
+  static async getAllLoanApplications() {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.GET_ALL_APPLICATIONS
+    );
+  }
+
+  static async getLoanApplicationById(id) {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.GET_APPLICATION_BY_ID(id)
+    );
+  }
+
+  static async updateLoanApplicationStatus(id, statusData) {
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.UPDATE_STATUS(id),
+      HTTP_METHODS.PATCH,
+      statusData
+    );
+  }
+
+  // Document upload methods for loan applications
+  static async uploadPanDocument(fileUri) {
+    const formData = new FormData();
+    formData.append('document', {
+      uri: fileUri,
+      type: 'application/pdf',
+      name: 'pan-document.pdf',
+    });
+
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.UPLOAD_PAN,
+      HTTP_METHODS.POST,
+      formData
+    );
+  }
+
+  static async uploadAadhaarDocument(fileUri) {
+    const formData = new FormData();
+    formData.append('document', {
+      uri: fileUri,
+      type: 'application/pdf',
+      name: 'aadhaar-document.pdf',
+    });
+
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.UPLOAD_AADHAAR,
+      HTTP_METHODS.POST,
+      formData
+    );
+  }
+
+  static async uploadBankStatement(fileUri) {
+    const formData = new FormData();
+    formData.append('document', {
+      uri: fileUri,
+      type: 'application/pdf',
+      name: 'bank-statement.pdf',
+    });
+
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.UPLOAD_BANK_STATEMENT,
+      HTTP_METHODS.POST,
+      formData
+    );
+  }
+
+  static async uploadSalarySlip(fileUri) {
+    const formData = new FormData();
+    formData.append('document', {
+      uri: fileUri,
+      type: 'application/pdf',
+      name: 'salary-slip.pdf',
+    });
+
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.UPLOAD_SALARY_SLIP,
+      HTTP_METHODS.POST,
+      formData
+    );
+  }
+
+  static async uploadPropertyDocument(fileUri) {
+    const formData = new FormData();
+    formData.append('document', {
+      uri: fileUri,
+      type: 'application/pdf',
+      name: 'property-document.pdf',
+    });
+
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.UPLOAD_PROPERTY_DOCUMENT,
+      HTTP_METHODS.POST,
+      formData
+    );
+  }
+
+  static async uploadBusinessDocument(fileUri) {
+    const formData = new FormData();
+    formData.append('document', {
+      uri: fileUri,
+      type: 'application/pdf',
+      name: 'business-document.pdf',
+    });
+
+    return await this.makeRequest(
+      API_ENDPOINTS.LOAN_APPLICATIONS.UPLOAD_BUSINESS_DOCUMENT,
+      HTTP_METHODS.POST,
+      formData
+    );
+  }
+
+  // Forgot Password API call
+  static async requestPasswordReset(email) {
+    return await this.makeRequest(
+      API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      HTTP_METHODS.POST,
+      { email }
+    );
+  }
+
+  // Reset Password API call
+  static async resetPasswordWithToken(resetToken, newPassword, confirmPassword) {
+    return await this.makeRequest(
+      API_ENDPOINTS.AUTH.RESET_PASSWORD(resetToken),
+      HTTP_METHODS.POST,
+      { newPassword, confirmPassword }
+    );
+  }
+
+  // Update profile API call
+  static async updateProfile(profileData) {
+    return await this.makeRequest(
+      API_ENDPOINTS.PROFILE.UPDATE_PROFILE,
+      HTTP_METHODS.PUT,
+      profileData
+    );
+  }
+
+  // Delete profile API call
+  static async deleteProfile() {
+    return await this.makeRequest(
+      API_ENDPOINTS.PROFILE.DELETE_PROFILE,
+      HTTP_METHODS.DELETE
+    );
   }
 }
 

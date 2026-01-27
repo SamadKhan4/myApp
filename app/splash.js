@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
+import { Animated, StyleSheet, Text, View } from 'react-native';
+import { hp, isIOS, scaleFont } from '../src/utils/responsive';
 
 export default function Splash() {
   const scaleValue = new Animated.Value(0.8);
@@ -69,34 +68,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: isIOS ? hp(5) : hp(3),
+    paddingBottom: isIOS ? hp(5) : hp(3),
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    fontSize: 36,
+    fontSize: scaleFont(36),
     fontWeight: '800',
     color: '#2563EB',
-    marginBottom: 12,
+    marginBottom: hp(1.5),
     letterSpacing: -0.5,
   },
   tagline: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#6B7280',
     fontWeight: '400',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#6B7280',
     fontWeight: '400',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   progressText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#9CA3AF',
     fontWeight: '300',
     textAlign: 'center',

@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Image, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { signup } from '../../src/utils/auth';
+import { wp, hp, scale, scaleFont, isIOS, isAndroid } from '../../src/utils/responsive';
 
 export default function Signup() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -147,7 +148,7 @@ export default function Signup() {
                 opacity: fadeAnim,
                 transform: [{ scale: scaleAnim }]
               },
-              { marginTop: 24 }
+              { marginTop: hp(3) }
             ]}
           >
             <View style={styles.benefitsContainer}>
@@ -173,7 +174,7 @@ export default function Signup() {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }]
               },
-              { marginTop: 32 }
+              { marginTop: hp(4) }
             ]}
           >
             <View style={styles.formCard}>
@@ -291,7 +292,7 @@ export default function Signup() {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }]
               },
-              { marginTop: 32 }
+              { marginTop: hp(4) }
             ]}
           >
             <View style={styles.dividerContainer}>
@@ -308,7 +309,7 @@ export default function Signup() {
                 opacity: fadeAnim,
                 transform: [{ scale: scaleAnim }]
               },
-              { marginTop: 24 }
+              { marginTop: hp(3) }
             ]}
           >
             <View style={styles.socialContainer}>
@@ -331,7 +332,7 @@ export default function Signup() {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }]
               },
-              { marginTop: 32, marginBottom: 40 }
+              { marginTop: hp(4), marginBottom: hp(5) }
             ]}
           >
             <View style={styles.signinContainer}>
@@ -358,19 +359,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
   },
   scrollContent: {
-    padding: 20,
-    paddingTop: 40,
+    padding: wp(5),
+    paddingTop: hp(5.5),
   },
   headerSection: {
     alignItems: 'center',
   },
   logoContainer: {
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: wp(22),
+    height: wp(22),
+    borderRadius: scale(11),
     backgroundColor: '#2563EB',
     justifyContent: 'center',
     alignItems: 'center',
@@ -378,30 +379,30 @@ const styles = StyleSheet.create({
     boxShadow: '0 4px 8px rgba(37, 99, 235, 0.3)',
   },
   logoText: {
-    fontSize: 32,
+    fontSize: scaleFont(32),
     fontWeight: '900',
     color: '#FFFFFF',
   },
   logoImage: {
-    width: 80,
-    height: 80,
+    width: wp(22),
+    height: wp(22),
   },
   brandName: {
-    fontSize: 28,
+    fontSize: scaleFont(28),
     fontWeight: '900',
     color: '#2563EB',
-    marginBottom: 8,
+    marginBottom: hp(1),
     letterSpacing: -0.5,
   },
   title: {
-    fontSize: 32,
+    fontSize: scaleFont(32),
     fontWeight: '900',
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: hp(1),
     letterSpacing: -1,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#6B7280',
     textAlign: 'center',
     fontWeight: '500',
@@ -410,38 +411,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: scale(16),
+    padding: wp(4),
     elevation: 2,
     boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)',
   },
   benefitItem: {
     alignItems: 'center',
-    gap: 6,
+    gap: hp(0.8),
   },
   benefitIcon: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
   },
   benefitText: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     fontWeight: '700',
     color: '#374151',
   },
   formCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: scale(20),
+    padding: wp(6),
     elevation: 3,
     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
   },
   inputWrapper: {
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   inputLabel: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     fontWeight: '700',
     color: '#374151',
-    marginBottom: 10,
+    marginBottom: hp(1.25),
   },
   inputContainer: {
     flexDirection: 'row',
@@ -449,42 +450,42 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
     borderWidth: 2,
     borderColor: '#E5E7EB',
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    height: 56,
+    borderRadius: scale(14),
+    paddingHorizontal: wp(4),
+    height: hp(7),
   },
   inputIcon: {
-    fontSize: 20,
-    marginRight: 12,
+    fontSize: scaleFont(20),
+    marginRight: wp(3),
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#111827',
     fontWeight: '600',
   },
   eyeButton: {
-    padding: 4,
+    padding: wp(1),
   },
   eyeIcon: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
   },
   helperText: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#6B7280',
-    marginTop: 8,
+    marginTop: hp(1),
     fontWeight: '500',
   },
   passwordStrength: {
     flexDirection: 'row',
-    gap: 6,
-    marginTop: 12,
+    gap: wp(1.5),
+    marginTop: hp(1.5),
   },
   strengthBar: {
     flex: 1,
-    height: 4,
+    height: hp(0.5),
     backgroundColor: '#E5E7EB',
-    borderRadius: 2,
+    borderRadius: scale(1),
   },
   strengthWeak: {
     backgroundColor: '#EF4444',
@@ -492,16 +493,16 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 24,
-    marginTop: 8,
+    marginBottom: hp(3),
+    marginTop: hp(1),
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
+    width: wp(6),
+    height: wp(6),
+    borderRadius: scale(3),
     borderWidth: 2,
     borderColor: '#D1D5DB',
-    marginRight: 12,
+    marginRight: wp(3),
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
@@ -512,14 +513,14 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '900',
   },
   checkboxText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#6B7280',
     flex: 1,
-    lineHeight: 20,
+    lineHeight: hp(2.8),
     fontWeight: '500',
   },
   linkText: {
@@ -528,14 +529,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#2563EB',
-    height: 56,
-    borderRadius: 14,
+    height: hp(7),
+    borderRadius: scale(14),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,
     shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: hp(0.5) },
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
@@ -546,13 +547,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: scaleFont(17),
     fontWeight: '800',
-    marginRight: 8,
+    marginRight: wp(2),
   },
   buttonIcon: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '700',
   },
   dividerContainer: {
@@ -561,24 +562,24 @@ const styles = StyleSheet.create({
   },
   dividerLine: {
     flex: 1,
-    height: 1,
+    height: hp(0.15),
     backgroundColor: '#E5E7EB',
   },
   dividerText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#9CA3AF',
     fontWeight: '600',
-    marginHorizontal: 16,
+    marginHorizontal: wp(4),
   },
   socialContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: wp(3),
   },
   socialButton: {
     flex: 1,
     flexDirection: 'row',
-    height: 56,
-    borderRadius: 14,
+    height: hp(7),
+    borderRadius: scale(14),
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
@@ -586,11 +587,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   socialIcon: {
-    fontSize: 20,
-    marginRight: 8,
+    fontSize: scaleFont(20),
+    marginRight: wp(2),
   },
   socialText: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '700',
     color: '#374151',
   },
@@ -598,15 +599,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   signinText: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#6B7280',
     fontWeight: '500',
   },
   signinLink: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#2563EB',
     fontWeight: '800',
   },
@@ -615,17 +616,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F0FDF4',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
+    paddingVertical: hp(1.5),
+    paddingHorizontal: wp(5),
+    borderRadius: scale(12),
     alignSelf: 'center',
   },
   trustIcon: {
-    fontSize: 16,
-    marginRight: 8,
+    fontSize: scaleFont(16),
+    marginRight: wp(2),
   },
   trustText: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     color: '#059669',
     fontWeight: '700',
   },

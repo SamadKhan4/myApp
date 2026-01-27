@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
-import { Text, View, StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { hp, scaleFont } from '../../src/utils/responsive';
 
 export default function TabsLayout() {
   return (
@@ -12,11 +13,12 @@ export default function TabsLayout() {
           backgroundColor: '#FFFFFF',
           borderTopWidth: 1,
           borderTopColor: '#E5E7EB',
-          paddingTop: 8,
-          paddingBottom: 16,
+          paddingTop: hp(1),
+          paddingBottom: hp(2),
+          height: hp(8),
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: scaleFont(12),
           fontWeight: '600',
         },
       }}
@@ -64,5 +66,6 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
   tabIcon: {
     textAlign: 'center',
+    fontSize: scaleFont(20),
   },
 });

@@ -1,105 +1,23 @@
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Image, Modal, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const { width } = Dimensions.get('window');
-
-const loanTypes = [
-  { 
-    id: 1, 
-    name: 'Personal Loan', 
-    icon: '💳', 
-    description: 'Flexible personal loans for any purpose with quick approval',
-    maxAmount: '₹ 5,00,000', 
-    interest: '12% p.a.',
-    color: '#8B5CF6',
-    features: ['No collateral', 'Quick approval', 'Flexible tenure'],
-    tenure: '12-60 months',
-    processing: '24 hours',
-    for: 'Individuals seeking quick funds for personal expenses, medical bills, travel, or other immediate needs',
-    benefits: ['Instant approval', 'Minimal documentation', 'Competitive rates']
-  },
-  { 
-    id: 2, 
-    name: 'Home Loan', 
-    icon: '🏠', 
-    description: 'Affordable home loans with attractive rates for your dream home',
-    maxAmount: '₹ 1 Cr', 
-    interest: '7.5% p.a.',
-    color: '#3B82F6',
-    features: ['Low interest', 'Long tenure', 'Tax benefits'],
-    tenure: '5-30 years',
-    processing: '3-5 days',
-    for: 'Individuals looking to purchase, construct, or renovate their dream home',
-    benefits: ['Tax deductions', 'Long repayment tenure', 'Flexible EMI options']
-  },
-  { 
-    id: 3, 
-    name: 'Auto Loan', 
-    icon: '🚗', 
-    description: 'Quick car loans with easy approval and competitive rates',
-    maxAmount: '₹ 50,00,000', 
-    interest: '9% p.a.',
-    color: '#10B981',
-    features: ['90% financing', 'Easy EMIs', 'Fast processing'],
-    tenure: '12-84 months',
-    processing: '48 hours',
-    for: 'Individuals wanting to purchase new or used vehicles',
-    benefits: ['Up to 90% financing', 'Quick disbursal', 'Insurance included']
-  },
-  { 
-    id: 4, 
-    name: 'Business Loan', 
-    icon: '💼', 
-    description: 'Funding for your business growth and expansion needs',
-    maxAmount: '₹ 50,00,000', 
-    interest: '11% p.a.',
-    color: '#F59E0B',
-    features: ['Minimal documentation', 'Working capital', 'Flexible repayment'],
-    tenure: '12-60 months',
-    processing: '2-3 days',
-    for: 'Small and medium enterprises needing working capital or expansion funds',
-    benefits: ['No collateral for small amounts', 'Quick disbursal', 'Flexible repayment']
-  },
-  { 
-    id: 5, 
-    name: 'Education Loan', 
-    icon: '🎓', 
-    description: 'Finance your education dreams with affordable interest rates',
-    maxAmount: '₹ 25,00,000', 
-    interest: '8% p.a.',
-    color: '#06B6D4',
-    features: ['Study abroad', 'Moratorium period', 'Parent co-borrower'],
-    tenure: '5-15 years',
-    processing: '3-4 days',
-    for: 'Students pursuing higher education in India or abroad',
-    benefits: ['Moratorium period', 'Tax benefits', 'Co-applicant option']
-  },
-  { 
-    id: 6, 
-    name: 'Gold Loan', 
-    icon: '🥇', 
-    description: 'Secure loans against gold with instant approval',
-    maxAmount: '₹ 5,00,000', 
-    interest: '10% p.a.',
-    color: '#EF4444',
-    features: ['Instant approval', 'Safe custody', 'Prepayment option'],
-    tenure: '3-36 months',
-    processing: 'Instant',
-    for: 'Individuals with gold jewelry who need quick funds',
-    benefits: ['Instant disbursal', 'Low documentation', 'Flexible tenure']
-  },
-];
+import { ActivityIndicator, Animated, Image, Modal, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import ApiService from '../../src/services/ApiService';
+import { hp, scale, scaleFont, wp } from '../../src/utils/responsive';
 
 export default function Loans() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedLoan, setSelectedLoan] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [loanTypes, setLoanTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const modalScale = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
+    fetchLoanTypes();
+    
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -113,6 +31,91 @@ export default function Loans() {
       })
     ]).start();
   }, []);
+  
+  const fetchLoanTypes = async () => {
+    try {
+      setLoading(true);
+      const response = await ApiService.getAllLoanTypes();
+      console.log('Loan types API response:', response); // Debug log
+      
+      if (response.success) {
+        let loansArray = [];
+        
+        // Check the structure of the response and extract loans appropriately
+        if (Array.isArray(response.data)) {
+          // If response.data is directly an array
+          loansArray = response.data;
+        } else if (response.data && typeof response.data === 'object') {
+          // If response.data is an object that contains loans
+          if (response.data.loans && Array.isArray(response.data.loans)) {
+            loansArray = response.data.loans;
+          } else if (response.data.data && Array.isArray(response.data.data)) {
+            loansArray = response.data.data;
+          } else if (response.data.loanTypes && Array.isArray(response.data.loanTypes)) {
+            loansArray = response.data.loanTypes;
+          } else if (response.data.loan_products && Array.isArray(response.data.loan_products)) {
+            loansArray = response.data.loan_products;
+          } else {
+            // If it's a single object, wrap it in an array
+            loansArray = [response.data];
+          }
+        }
+        
+        // Transform API response to match our UI format
+        const transformedLoans = loansArray.map((loan, index) => ({
+          id: loan._id || loan.id || index,
+          name: loan.loanName || loan.name,
+          icon: getLoanIconByCategory(loan.loanCategory || loan.category || loan.type),
+          description: loan.loanDescription || loan.description || 'Flexible loan options for your financial needs',
+          maxAmount: `₹ ${(loan.maxAmount / 100000 || loan.maximumAmount / 100000 || 50).toFixed(0)} Lakh`,
+          minAmount: `₹ ${(loan.minAmount / 100000 || loan.minimumAmount / 100000 || 1).toFixed(0)} Lakh`,
+          interest: `${loan.interestRate?.min || loan.interestRate || loan.interest || '12'}% p.a.`,
+          processingTime: loan.processingTime || loan.processing_time || '24-48 hours',
+          tenure: `Up to ${loan.tenure?.maxMonths || loan.tenure || loan.maxTenure || '60'} months`,
+          eligibility: loan.eligibilityCriteria || loan.eligibility || 'Valid ID and income proof',
+          features: loan.requiredDocuments || loan.requirements || ['No collateral required', 'Quick approval', 'Flexible tenure'],
+          color: getLoanColorByCategory(loan.loanCategory || loan.category || loan.type),
+          for: loan.purpose || loan.target_audience || 'Individuals seeking quick funds for various purposes',
+          benefits: loan.benefits || loan.features || ['Quick approval', 'Minimal documentation', 'Competitive rates']
+        }));
+        
+        setLoanTypes(transformedLoans);
+      } else {
+        setError(response.message || 'Failed to fetch loan types');
+      }
+    } catch (err) {
+      console.error('Error fetching loan types:', err);
+      setError(err.message || 'An error occurred while fetching loan types');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const getLoanIconByCategory = (category) => {
+    const icons = {
+      personal: '💳',
+      home: '🏠',
+      vehicle: '🚗',
+      business: '💼',
+      education: '🎓',
+      gold: '🥇',
+      default: '💰'
+    };
+    return icons[category] || icons.default;
+  };
+  
+  const getLoanColorByCategory = (category) => {
+    const colors = {
+      personal: '#8B5CF6',
+      home: '#3B82F6',
+      vehicle: '#10B981',
+      business: '#F59E0B',
+      education: '#06B6D4',
+      gold: '#EF4444',
+      default: '#6366F1'
+    };
+    return colors[category] || colors.default;
+  };
 
   const openLoanModal = (loan) => {
     setSelectedLoan(loan);
@@ -142,6 +145,23 @@ export default function Loans() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2563EB" />
+          <Text style={styles.loadingText}>Loading loan options...</Text>
+        </View>
+      )}
+      
+      {!loading && error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchLoanTypes}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      
+      {!loading && !error && (
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -177,7 +197,7 @@ export default function Loans() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 24 }]}
+          }, { marginTop: hp(3) }]}
         >
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statsContainer}>
             <View style={[styles.statCard, { backgroundColor: '#EEF2FF' }]}>
@@ -211,7 +231,7 @@ export default function Loans() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 28 }]}
+          }, { marginTop: hp(3.5) }]}
         >
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
             {filters.map((filter) => (
@@ -239,7 +259,7 @@ export default function Loans() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 24 }]}
+          }, { marginTop: hp(3) }]}
         >
           <View style={styles.popularBanner}>
             <View style={styles.popularContent}>
@@ -272,7 +292,7 @@ export default function Loans() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 32 }]}
+          }, { marginTop: hp(4) }]}
         >
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>All Loan Products</Text>
@@ -326,7 +346,7 @@ export default function Loans() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 32, marginBottom: 100 }]}
+          }, { marginTop: hp(4), marginBottom: hp(12.5) }]}
         >
           <View style={styles.helpSection}>
             <Text style={styles.helpIcon}>💬</Text>
@@ -338,6 +358,7 @@ export default function Loans() {
           </View>
         </Animated.View>
       </ScrollView>
+      )}
 
       {/* Enhanced Loan Detail Modal */}
       <Modal
@@ -486,7 +507,11 @@ export default function Loans() {
                   <TouchableOpacity 
                     style={[styles.applyButton, { backgroundColor: selectedLoan.color }]}
                     onPress={() => {
-                      alert(`Application for ${selectedLoan.name} submitted successfully!`);
+                      // Navigate to loan application form with pre-filled loan details
+                      router.push({
+                        pathname: '/loan-application',
+                        params: { loanTypeId: selectedLoan.id, loanName: selectedLoan.name }
+                      });
                       closeLoanModal();
                     }}
                   >
@@ -507,101 +532,137 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: hp(5),
+  },
+  loadingText: {
+    marginTop: hp(2),
+    fontSize: scaleFont(16),
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: wp(5),
+  },
+  errorText: {
+    fontSize: scaleFont(16),
+    color: '#EF4444',
+    textAlign: 'center',
+    marginBottom: hp(2.5),
+    fontWeight: '500',
+  },
+  retryButton: {
+    backgroundColor: '#2563EB',
+    paddingHorizontal: wp(6),
+    paddingVertical: hp(1.5),
+    borderRadius: scale(8),
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: scaleFont(16),
+    fontWeight: '600',
+  },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: wp(5),
+    paddingBottom: hp(5),
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginTop: 8,
+    marginTop: hp(1),
   },
   headerLeft: {
     flex: 1,
   },
   logoContainer: {
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   logoImage: {
-    width: 40,
-    height: 40,
+    width: wp(10),
+    height: wp(10),
   },
   brandName: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: '900',
     color: '#2563EB',
     letterSpacing: -0.5,
   },
   title: {
-    fontSize: 32,
+    fontSize: scaleFont(32),
     fontWeight: '900',
     color: '#111827',
-    marginTop: 4,
+    marginTop: hp(0.5),
     letterSpacing: -1,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#6B7280',
-    lineHeight: 24,
-    marginTop: 12,
+    lineHeight: hp(3),
+    marginTop: hp(1.5),
     fontWeight: '500',
   },
   filterButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: wp(11),
+    height: wp(11),
+    borderRadius: scale(22),
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
   },
   filterIcon: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
   },
   statsContainer: {
     flexDirection: 'row',
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
+    marginHorizontal: -wp(5),
+    paddingHorizontal: wp(5),
   },
   statCard: {
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    marginRight: 12,
-    minWidth: 120,
+    paddingVertical: hp(2.5),
+    paddingHorizontal: wp(6),
+    borderRadius: scale(16),
+    marginRight: wp(3),
+    minWidth: wp(30),
     alignItems: 'center',
   },
   statIcon: {
-    fontSize: 28,
-    marginBottom: 8,
+    fontSize: scaleFont(28),
+    marginBottom: hp(1),
   },
   statValue: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: '900',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: hp(0.5),
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#6B7280',
     fontWeight: '600',
   },
   filtersContainer: {
     flexDirection: 'row',
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
+    marginHorizontal: -wp(5),
+    paddingHorizontal: wp(5),
   },
   filterPill: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingHorizontal: wp(5),
+    paddingVertical: hp(1.25),
+    borderRadius: scale(20),
     backgroundColor: '#FFFFFF',
-    marginRight: 10,
+    marginRight: wp(2.5),
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
@@ -610,7 +671,7 @@ const styles = StyleSheet.create({
     borderColor: '#2563EB',
   },
   filterText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     fontWeight: '600',
     color: '#6B7280',
   },
@@ -619,33 +680,33 @@ const styles = StyleSheet.create({
   },
   popularBanner: {
     backgroundColor: '#2563EB',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: scale(20),
+    padding: wp(6),
     elevation: 4,
     shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: hp(0.5) },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   popularContent: {
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   popularBadge: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     fontWeight: '700',
     color: '#FEF3C7',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   popularTitle: {
-    fontSize: 28,
+    fontSize: scaleFont(28),
     fontWeight: '900',
     color: '#FFFFFF',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   popularDesc: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#BFDBFE',
-    marginBottom: 16,
+    marginBottom: hp(2),
     fontWeight: '500',
   },
   popularStats: {
@@ -656,104 +717,104 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   popularStatValue: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '800',
     color: '#FFFFFF',
-    marginBottom: 2,
+    marginBottom: hp(0.25),
   },
   popularStatLabel: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     color: '#BFDBFE',
     fontWeight: '600',
   },
   popularStatDivider: {
-    width: 1,
-    height: 40,
+    width: hp(0.125),
+    height: hp(5),
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    marginHorizontal: 16,
+    marginHorizontal: wp(4),
   },
   popularButton: {
     backgroundColor: '#FFFFFF',
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: hp(1.75),
+    borderRadius: scale(12),
     alignItems: 'center',
   },
   popularButtonText: {
     color: '#2563EB',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '800',
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: scaleFont(22),
     fontWeight: '800',
     color: '#111827',
   },
   loanCount: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#6B7280',
     fontWeight: '600',
   },
   loansGrid: {
-    gap: 16,
+    gap: wp(4),
   },
   loanCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: scale(20),
+    padding: wp(5),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   loanCardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   loanIconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: wp(15),
+    height: wp(15),
+    borderRadius: scale(30),
     justifyContent: 'center',
     alignItems: 'center',
   },
   loanIcon: {
-    fontSize: 32,
+    fontSize: scaleFont(32),
   },
   trendingBadge: {
     backgroundColor: '#FEF3C7',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: wp(2.5),
+    paddingVertical: hp(0.75),
+    borderRadius: scale(12),
   },
   trendingText: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
   },
   loanName: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   loanDescription: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#6B7280',
-    lineHeight: 20,
-    marginBottom: 16,
+    lineHeight: hp(2.5),
+    marginBottom: hp(2),
     fontWeight: '500',
   },
   loanFooter: {
     flexDirection: 'row',
-    marginBottom: 16,
-    paddingVertical: 16,
+    marginBottom: hp(2),
+    paddingVertical: hp(2),
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#E5E7EB',
@@ -762,67 +823,67 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loanDetailLabel: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#6B7280',
-    marginBottom: 4,
+    marginBottom: hp(0.5),
     fontWeight: '600',
   },
   loanDetailValue: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '800',
     color: '#111827',
   },
   loanDetailDivider: {
-    width: 1,
+    width: hp(0.125),
     backgroundColor: '#E5E7EB',
-    marginHorizontal: 16,
+    marginHorizontal: wp(4),
   },
   loanButton: {
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: hp(1.5),
+    borderRadius: scale(12),
     alignItems: 'center',
     borderWidth: 1.5,
   },
   loanButtonText: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     fontWeight: '700',
   },
   helpSection: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 32,
+    borderRadius: scale(20),
+    padding: wp(8),
     alignItems: 'center',
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   helpIcon: {
-    fontSize: 48,
-    marginBottom: 16,
+    fontSize: scaleFont(48),
+    marginBottom: hp(2),
   },
   helpTitle: {
-    fontSize: 22,
+    fontSize: scaleFont(22),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   helpDesc: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#6B7280',
-    marginBottom: 20,
+    marginBottom: hp(2.5),
     fontWeight: '500',
   },
   helpButton: {
     backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 12,
+    paddingVertical: hp(1.75),
+    paddingHorizontal: wp(8),
+    borderRadius: scale(12),
   },
   helpButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '700',
   },
   modalOverlay: {
@@ -839,95 +900,95 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    borderTopLeftRadius: scale(32),
+    borderTopRightRadius: scale(32),
     maxHeight: '90%',
     position: 'relative',
   },
   closeButton: {
     position: 'absolute',
-    right: 20,
-    top: 20,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    right: wp(5),
+    top: wp(5),
+    width: wp(9),
+    height: wp(9),
+    borderRadius: scale(18),
     backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
   },
   closeButtonText: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '600',
     color: '#6B7280',
   },
   modalHeader: {
-    padding: 24,
-    paddingTop: 32,
+    padding: wp(6),
+    paddingTop: hp(4),
     alignItems: 'center',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    borderTopLeftRadius: scale(32),
+    borderTopRightRadius: scale(32),
   },
   modalIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: wp(20),
+    height: wp(20),
+    borderRadius: scale(40),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   modalIcon: {
-    fontSize: 40,
+    fontSize: scaleFont(40),
   },
   modalTitle: {
-    fontSize: 26,
+    fontSize: scaleFont(26),
     fontWeight: '900',
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: hp(1),
     textAlign: 'center',
   },
   modalDescription: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#6B7280',
-    lineHeight: 22,
+    lineHeight: hp(2.75),
     textAlign: 'center',
     fontWeight: '500',
   },
   modalBody: {
-    paddingHorizontal: 24,
-    paddingTop: 8,
+    paddingHorizontal: wp(6),
+    paddingTop: hp(1),
   },
   modalSection: {
-    marginBottom: 28,
+    marginBottom: hp(3.5),
   },
   modalSectionTitle: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   featuresList: {
-    gap: 12,
+    gap: wp(3),
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   featureDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 12,
+    width: hp(1),
+    height: hp(1),
+    borderRadius: scale(4),
+    marginRight: wp(3),
   },
   featureText: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#374151',
     fontWeight: '600',
   },
   detailCard: {
     backgroundColor: '#F9FAFB',
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: scale(16),
+    padding: wp(5),
   },
   detailRow: {
     flexDirection: 'row',
@@ -935,96 +996,96 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   detailLabel: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#6B7280',
     fontWeight: '600',
   },
   detailValue: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#111827',
     fontWeight: '800',
   },
   detailDivider: {
-    height: 1,
+    height: hp(0.125),
     backgroundColor: '#E5E7EB',
-    marginVertical: 16,
+    marginVertical: hp(2),
   },
   documentsList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: wp(3),
   },
   documentItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F9FAFB',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    paddingVertical: hp(1.25),
+    paddingHorizontal: wp(4),
+    borderRadius: scale(12),
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
   documentIcon: {
-    fontSize: 18,
-    marginRight: 8,
+    fontSize: scaleFont(18),
+    marginRight: wp(2),
   },
   documentText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#374151',
     fontWeight: '600',
   },
   modalFooter: {
     flexDirection: 'row',
-    padding: 24,
-    paddingTop: 16,
-    gap: 12,
+    padding: wp(6),
+    paddingTop: hp(2),
+    gap: wp(3),
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
   },
   calculateButton: {
     flex: 1,
     backgroundColor: '#F3F4F6',
-    paddingVertical: 16,
-    borderRadius: 14,
+    paddingVertical: hp(2),
+    borderRadius: scale(14),
     alignItems: 'center',
     justifyContent: 'center',
   },
   calculateButtonText: {
     color: '#374151',
-    fontSize: 15,
+    fontSize: scaleFont(15),
     fontWeight: '700',
   },
   applyButton: {
     flex: 1,
-    paddingVertical: 16,
-    borderRadius: 14,
+    paddingVertical: hp(2),
+    borderRadius: scale(14),
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
   },
   applyButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: scaleFont(15),
     fontWeight: '800',
   },
   disclaimerSection: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingHorizontal: wp(6),
+    paddingTop: hp(2),
+    paddingBottom: hp(3),
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
-    marginTop: 8,
+    marginTop: hp(1),
   },
   disclaimerText: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#6B7280',
     fontWeight: '400',
     fontStyle: 'italic',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: hp(1),
   },
 });

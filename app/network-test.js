@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { hp, scale, scaleFont, verticalScale, wp } from '../src/utils/responsive';
 
 export default function NetworkTestScreen() {
   const [results, setResults] = useState([]);
@@ -123,47 +124,47 @@ export default function NetworkTestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: wp(5),
     backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: hp(2.5),
     color: '#333',
     textAlign: 'center',
   },
   button: {
     backgroundColor: '#2563EB',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
+    paddingHorizontal: wp(8),
+    paddingVertical: verticalScale(15),
+    borderRadius: scale(8),
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   disabledButton: {
     backgroundColor: '#9CA3AF',
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '600',
   },
   resultsContainer: {
     flex: 1,
     backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 20,
+    borderRadius: scale(8),
+    padding: wp(4),
+    marginBottom: hp(2.5),
   },
   resultText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#333',
-    marginBottom: 5,
+    marginBottom: hp(0.6),
     fontFamily: 'monospace',
   },
   info: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#666',
     textAlign: 'center',
   },

@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { Animated, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { wp, hp, scale, moderateScale, scaleFont, SCREEN_WIDTH, SCREEN_HEIGHT, isIOS, isAndroid } from '../../src/utils/responsive';
 
 export default function Calculator() {
   const [activeTab, setActiveTab] = useState('emi'); // 'emi' or 'loan'
@@ -154,7 +153,7 @@ export default function Calculator() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 24 }]}
+          }, { marginTop: hp(3) }]}
         >
           <View style={styles.tabContainer}>
             <TouchableOpacity
@@ -186,7 +185,7 @@ export default function Calculator() {
           style={[{
             opacity: fadeAnim,
             transform: [{ scale: scaleAnim }]
-          }, { marginTop: 28 }]}
+          }, { marginTop: hp(3.5) }]}
         >
           <View style={styles.calculatorCard}>
             <View style={styles.calculatorHeader}>
@@ -330,7 +329,7 @@ export default function Calculator() {
             style={[{
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }]
-            }, { marginTop: 24 }]}
+            }, { marginTop: hp(3) }]}
           >
             <View style={styles.resultCard}>
               <View style={styles.resultHeader}>
@@ -410,7 +409,7 @@ export default function Calculator() {
             style={[{
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }]
-            }, { marginTop: 24 }]}
+            }, { marginTop: hp(3) }]}
           >
             <View style={styles.emptyState}>
               <Text style={styles.emptyIcon}>📊</Text>
@@ -425,7 +424,7 @@ export default function Calculator() {
           style={[{
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
-          }, { marginTop: 28, marginBottom: 100 }]}
+          }, { marginTop: hp(3.5), marginBottom: hp(12.5) }]}
         >
           <View style={styles.presetsSection}>
             <Text style={styles.presetsTitle}>Quick Presets</Text>
@@ -503,100 +502,100 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
   },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: wp(5),
+    paddingBottom: hp(5),
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginTop: 8,
+    marginTop: hp(1),
   },
   headerLeft: {
     flex: 1,
   },
   logoContainer: {
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   logoImage: {
-    width: 40,
-    height: 40,
+    width: wp(10),
+    height: wp(10),
   },
   brandName: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: '900',
     color: '#2563EB',
     letterSpacing: -0.5,
   },
   title: {
-    fontSize: 32,
+    fontSize: scaleFont(32),
     fontWeight: '900',
     color: '#111827',
-    marginTop: 4,
+    marginTop: hp(0.5),
     letterSpacing: -1,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#6B7280',
-    lineHeight: 24,
-    marginTop: 12,
+    lineHeight: hp(3),
+    marginTop: hp(1.5),
     fontWeight: '500',
   },
   historyButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: wp(11),
+    height: wp(11),
+    borderRadius: scale(22),
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
   },
   historyIcon: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
   },
   tabContainer: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 6,
-    gap: 8,
+    borderRadius: scale(16),
+    padding: wp(1.5),
+    gap: wp(2),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: hp(0.125) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
   },
   tab: {
     flex: 1,
-    paddingVertical: 16,
+    paddingVertical: hp(2),
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: scale(12),
     backgroundColor: 'transparent',
   },
   activeTab: {
     backgroundColor: '#EEF2FF',
   },
   tabIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: wp(10),
+    height: wp(10),
+    borderRadius: scale(20),
     backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   activeTabIconContainer: {
     backgroundColor: '#DBEAFE',
   },
   tabIcon: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
   },
   tabText: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     fontWeight: '700',
     color: '#6B7280',
   },
@@ -605,43 +604,43 @@ const styles = StyleSheet.create({
   },
   calculatorCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: scale(20),
+    padding: wp(6),
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   calculatorHeader: {
-    marginBottom: 24,
+    marginBottom: hp(3),
   },
   calculatorTitle: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 6,
+    marginBottom: hp(0.75),
   },
   calculatorDesc: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#6B7280',
     fontWeight: '500',
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   inputLabel: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     fontWeight: '700',
     color: '#374151',
-    marginBottom: 10,
+    marginBottom: hp(1.25),
   },
   helperText: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#6B7280',
-    marginTop: 6,
+    marginTop: hp(0.75),
     fontWeight: '400',
-    marginLeft: 4,
+    marginLeft: wp(1),
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -649,93 +648,93 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
     borderWidth: 2,
     borderColor: '#E5E7EB',
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    height: 56,
+    borderRadius: scale(14),
+    paddingHorizontal: wp(4),
+    height: hp(7),
   },
   inputPrefix: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '700',
     color: '#9CA3AF',
-    marginRight: 12,
+    marginRight: wp(3),
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: scaleFont(16),
     color: '#111827',
     fontWeight: '600',
   },
   calculateButton: {
     backgroundColor: '#2563EB',
-    height: 56,
-    borderRadius: 14,
+    height: hp(7),
+    borderRadius: scale(14),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: hp(1.25),
     elevation: 4,
     shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: hp(0.5) },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   calculateButtonText: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: scaleFont(17),
     fontWeight: '800',
-    marginRight: 8,
+    marginRight: wp(2),
   },
   calculateButtonIcon: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '700',
   },
   resultCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: scale(20),
+    padding: wp(6),
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   resultHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   resultLabel: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     fontWeight: '700',
     color: '#6B7280',
   },
   resultBadge: {
     backgroundColor: '#ECFDF5',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: wp(3),
+    paddingVertical: hp(0.75),
+    borderRadius: scale(12),
   },
   resultBadgeText: {
-    fontSize: 11,
+    fontSize: scaleFont(11),
     color: '#059669',
     fontWeight: '700',
   },
   resultValue: {
-    fontSize: 44,
+    fontSize: scaleFont(44),
     fontWeight: '900',
     color: '#2563EB',
-    marginBottom: 20,
+    marginBottom: hp(2.5),
     letterSpacing: -1,
   },
   resultDivider: {
-    height: 1,
+    height: hp(0.125),
     backgroundColor: '#E5E7EB',
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   breakdownContainer: {
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   breakdownRow: {
     flexDirection: 'row',
@@ -745,98 +744,98 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   breakdownLabel: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     color: '#6B7280',
-    marginBottom: 6,
+    marginBottom: hp(0.75),
     fontWeight: '600',
   },
   breakdownValue: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '800',
     color: '#111827',
   },
   breakdownDivider: {
-    width: 1,
-    height: 40,
+    width: hp(0.125),
+    height: hp(5),
     backgroundColor: '#E5E7EB',
-    marginHorizontal: 16,
+    marginHorizontal: wp(4),
   },
   breakdownSeparator: {
-    height: 16,
+    height: hp(2),
   },
   noteContainer: {
     backgroundColor: '#FEF3C7',
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 16,
+    borderRadius: scale(12),
+    padding: wp(4),
+    marginTop: hp(2),
     borderLeftWidth: 4,
     borderLeftColor: '#F59E0B',
   },
   noteText: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     color: '#92400E',
     fontWeight: '500',
     textAlign: 'center',
   },
   chartContainer: {
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   chartLegend: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 16,
+    paddingVertical: hp(2),
     backgroundColor: '#F9FAFB',
-    borderRadius: 12,
+    borderRadius: scale(12),
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   legendDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8,
+    width: hp(1.5),
+    height: hp(1.5),
+    borderRadius: scale(3),
+    marginRight: wp(2),
   },
   legendText: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     color: '#374151',
     fontWeight: '600',
   },
   applyButton: {
     backgroundColor: '#111827',
-    paddingVertical: 16,
-    borderRadius: 14,
+    paddingVertical: hp(2),
+    borderRadius: scale(14),
     alignItems: 'center',
   },
   applyButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '800',
   },
   emptyState: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 48,
+    borderRadius: scale(20),
+    padding: wp(12),
     alignItems: 'center',
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: hp(0.125) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
   },
   emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
+    fontSize: scaleFont(64),
+    marginBottom: hp(2),
   },
   emptyTitle: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   emptyDesc: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#6B7280',
     textAlign: 'center',
     fontWeight: '500',
@@ -845,43 +844,43 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   presetsTitle: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '800',
     color: '#111827',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   presetsScroll: {
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
+    marginHorizontal: -wp(5),
+    paddingHorizontal: wp(5),
   },
   presetCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginRight: 12,
-    minWidth: 140,
+    borderRadius: scale(16),
+    padding: wp(5),
+    marginRight: wp(3),
+    minWidth: wp(35),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: hp(0.125) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
   presetAmount: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: '900',
     color: '#2563EB',
-    marginBottom: 6,
+    marginBottom: hp(0.75),
   },
   presetLabel: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     fontWeight: '700',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: hp(0.5),
   },
   presetDetail: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#6B7280',
     fontWeight: '600',
   },

@@ -1,8 +1,9 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { createOrUpdateProfile, getMyProfile, uploadProfilePicture } from '../../src/utils/profile';
+import { ActivityIndicator, Alert, Animated, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import ApiService from '../../src/services/ApiService';
+import { hp, scale, scaleFont, wp } from '../../src/utils/responsive';
 
 export default function Profile() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -69,9 +70,51 @@ export default function Profile() {
 
   const loadProfile = async () => {
     try {
-      const result = await getMyProfile();
-      if (result.success) {
-        setProfileData(result.data);
+      const response = await ApiService.getMyProfile();
+      console.log('Profile API response:', response); // Debug log
+      
+      if (response.success) {
+        // Check the structure of the response and extract profile appropriately
+        let profileDataFromResponse = response.data;
+        
+        // Handle different response structures
+        if (response.data && typeof response.data === 'object') {
+          if (response.data.profile) {
+            // If the profile data is nested inside a profile property
+            profileDataFromResponse = response.data.profile;
+          } else if (response.data.user) {
+            // If the profile data is nested inside a user property
+            profileDataFromResponse = response.data.user;
+          } else if (response.data.data) {
+            // If the profile data is nested inside a data property
+            profileDataFromResponse = response.data.data;
+          } else if (response.data.userData) {
+            // If the profile data is nested inside a userData property
+            profileDataFromResponse = response.data.userData;
+          }
+        }
+        
+        // Transform API response to match component state structure
+        const transformedData = {
+          ...profileDataFromResponse,
+          address: profileDataFromResponse.address?.addressLine || profileDataFromResponse.address?.address || profileDataFromResponse.address || '',
+          pincode: profileDataFromResponse.address?.pincode || profileDataFromResponse.pincode || '',
+          city: profileDataFromResponse.address?.city || profileDataFromResponse.city || '',
+          state: profileDataFromResponse.address?.state || profileDataFromResponse.state || '',
+          bankDetails: profileDataFromResponse.bankDetails || profileDataFromResponse.bank_details || [{
+            bankName: '',
+            accountNo: '',
+            accountHolderName: '',
+            bankBranch: '',
+            ifscCode: ''
+          }],
+          fullName: profileDataFromResponse.fullName || profileDataFromResponse.full_name || profileDataFromResponse.name || profileDataFromResponse.firstName || '',
+          adharNo: profileDataFromResponse.adharNo || profileDataFromResponse.aadhaarNumber || profileDataFromResponse.aadhar_no || profileDataFromResponse.aadhaarNo || profileDataFromResponse.aadharNo || '',
+          phoneNo: profileDataFromResponse.phoneNo || profileDataFromResponse.phone_number || profileDataFromResponse.phoneNumber || profileDataFromResponse.mobile || '',
+          phoneNo2: profileDataFromResponse.phoneNo2 || profileDataFromResponse.phone_number2 || profileDataFromResponse.phoneNumber2 || '',
+          profilePic: profileDataFromResponse.profilePic || profileDataFromResponse.profilePicture || profileDataFromResponse.profile_picture || profileDataFromResponse.avatar || null
+        };
+        setProfileData(transformedData);
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -88,24 +131,33 @@ export default function Profile() {
     setLoading(true);
     try {
       // If there's a new profile picture selected, upload it first
-      let updatedProfileData = {...profileData};
+      let profilePicUrl = null;
       if (profilePicUri) {
-        const uploadResult = await uploadProfilePicture(profilePicUri);
+        const uploadResult = await ApiService.uploadProfilePicture(profilePicUri);
         console.log('Upload result:', uploadResult); // Debug log
         if (uploadResult.success) {
           // Extract the URL string from the response object
-          let profilePicUrl;
           if (typeof uploadResult.data === 'string') {
             profilePicUrl = uploadResult.data;
           } else if (uploadResult.data && typeof uploadResult.data === 'object') {
-            // Handle object response - extract the URL from profilePic property
-            profilePicUrl = uploadResult.data.profilePic || uploadResult.data.url || '';
+            // Handle different possible response structures
+            if (uploadResult.data.profilePic) {
+              profilePicUrl = uploadResult.data.profilePic;
+            } else if (uploadResult.data.url) {
+              profilePicUrl = uploadResult.data.url;
+            } else if (uploadResult.data.imageUrl) {
+              profilePicUrl = uploadResult.data.imageUrl;
+            } else if (uploadResult.data.image_url) {
+              profilePicUrl = uploadResult.data.image_url;
+            } else {
+              // Try to stringify the object as fallback
+              profilePicUrl = JSON.stringify(uploadResult.data);
+            }
           } else {
             profilePicUrl = '';
           }
           
           if (profilePicUrl && typeof profilePicUrl === 'string') {
-            updatedProfileData.profilePic = profilePicUrl;
             setProfileData(prev => ({
               ...prev,
               profilePic: profilePicUrl
@@ -121,10 +173,25 @@ export default function Profile() {
         }
       }
 
-      console.log('Sending profile data:', updatedProfileData); // Debug log
-      const result = await createOrUpdateProfile(updatedProfileData);
+      // Prepare profile data for API call
+      const profilePayload = {
+        ...profileData,
+        // Ensure address is in the correct format
+        address: {
+          addressLine: profileData.address,
+          city: profileData.city || '',
+          state: profileData.state || '',
+          pincode: profileData.pincode || ''
+        },
+        // Set the profile picture if it was uploaded
+        ...(profilePicUrl && { profilePic: profilePicUrl })
+      };
+
+      console.log('Sending profile data:', profilePayload); // Debug log
+      const result = await ApiService.updateProfile(profilePayload);
+      console.log('Update profile result:', result); // Debug log
       if (result.success) {
-        Alert.alert('Success', result.message || 'Profile saved successfully');
+        Alert.alert('Success', result.data?.message || result.message || 'Profile saved successfully');
         setIsEditing(false);
       } else {
         Alert.alert('Error', result.message || 'Failed to save profile');
@@ -243,13 +310,31 @@ export default function Profile() {
 
     try {
       setLoading(true);
-      const result = await uploadProfilePicture(profilePicUri);
+      const result = await ApiService.uploadProfilePicture(profilePicUri);
       if (result.success) {
-        Alert.alert('Success', result.message || 'Profile picture uploaded successfully');
+        Alert.alert('Success', result.data?.message || result.message || 'Profile picture uploaded successfully');
         // Update the profile data with the new profile picture URL
+        let profilePicUrl;
+        if (typeof result.data === 'string') {
+          profilePicUrl = result.data;
+        } else if (result.data && typeof result.data === 'object') {
+          // Handle different possible response structures
+          if (result.data.profilePic) {
+            profilePicUrl = result.data.profilePic;
+          } else if (result.data.url) {
+            profilePicUrl = result.data.url;
+          } else if (result.data.imageUrl) {
+            profilePicUrl = result.data.imageUrl;
+          } else if (result.data.image_url) {
+            profilePicUrl = result.data.image_url;
+          } else {
+            // Try to stringify the object as fallback
+            profilePicUrl = JSON.stringify(result.data);
+          }
+        }
         setProfileData(prev => ({
           ...prev,
-          profilePic: result.data?.profilePicUrl || result.data
+          profilePic: profilePicUrl
         }));
       } else {
         Alert.alert('Error', result.message || 'Failed to upload profile picture');
@@ -340,7 +425,15 @@ export default function Profile() {
       <View style={styles.headerBackground}>
         <View style={styles.headerGradient} />
       </View>
-
+      
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2563EB" />
+          <Text style={styles.loadingText}>Loading profile...</Text>
+        </View>
+      )}
+      
+      {!loading && (
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -680,6 +773,14 @@ export default function Profile() {
           }, { marginTop: 28, marginBottom: 100 }]}
         >
           <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => router.push('/loan-status')}
+          >
+            <Text style={styles.actionIcon}>📋</Text>
+            <Text style={styles.actionText}>View Loan Status</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
             style={styles.forgotPasswordButton}
             onPress={handleForgotPassword}
           >
@@ -696,6 +797,7 @@ export default function Profile() {
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -710,136 +812,192 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 200,
+    height: hp(25),
     backgroundColor: '#1E40AF',
     overflow: 'hidden',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: hp(5),
+  },
+  loadingText: {
+    marginTop: hp(2),
+    fontSize: scaleFont(16),
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: wp(5),
+  },
+  errorText: {
+    fontSize: scaleFont(16),
+    color: '#EF4444',
+    textAlign: 'center',
+    marginBottom: hp(2.5),
+    fontWeight: '500',
+  },
+  retryButton: {
+    backgroundColor: '#2563EB',
+    paddingHorizontal: wp(6),
+    paddingVertical: hp(1.5),
+    borderRadius: scale(8),
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: scaleFont(16),
+    fontWeight: '600',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: hp(2),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: scale(14),
+    marginBottom: hp(1.5),
+    borderWidth: 1.5,
+    borderColor: '#2563EB',
+  },
+  actionIcon: {
+    fontSize: scaleFont(20),
+    marginRight: wp(2.5),
+  },
+  actionText: {
+    fontSize: scaleFont(16),
+    fontWeight: '800',
+    color: '#2563EB',
   },
   headerGradient: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 200,
+    height: hp(25),
     backgroundColor: '#2563EB',
     opacity: 0.8,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
+    paddingHorizontal: wp(5),
+    paddingTop: hp(2.5),
+    paddingBottom: hp(5),
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   headerLeft: {
     flex: 1,
   },
   logoContainer: {
-    marginBottom: 8,
+    marginBottom: hp(1),
   },
   logoImage: {
-    width: 40,
-    height: 40,
+    width: wp(10),
+    height: wp(10),
   },
   brandName: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: '900',
     color: '#FFFFFF',
     letterSpacing: -0.5,
   },
   title: {
-    fontSize: 32,
+    fontSize: scaleFont(32),
     fontWeight: '900',
     color: '#FFFFFF',
-    marginTop: 4,
+    marginTop: hp(0.5),
     letterSpacing: -1,
   },
   settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: wp(11),
+    height: wp(11),
+    borderRadius: scale(22),
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   settingsIcon: {
-    fontSize: 22,
+    fontSize: scaleFont(22),
   },
   profileCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
+    borderRadius: scale(24),
+    padding: wp(6),
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   avatarContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: wp(20),
+    height: wp(20),
+    borderRadius: scale(40),
     backgroundColor: '#2563EB',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: wp(4),
     position: 'relative',
     overflow: 'hidden',
   },
   avatarText: {
-    fontSize: 32,
+    fontSize: scaleFont(32),
     fontWeight: '900',
     color: '#FFFFFF',
   },
   avatarImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: wp(20),
+    height: wp(20),
+    borderRadius: scale(40),
   },
   cameraIconContainer: {
     position: 'absolute',
     bottom: 0,
     right: 0,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 4,
+    borderRadius: scale(12),
+    padding: wp(1),
   },
   cameraIcon: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#6B7280',
   },
   profileInfo: {
     flex: 1,
   },
   userName: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: '900',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: hp(0.5),
   },
   userEmail: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#6B7280',
-    marginBottom: 8,
+    marginBottom: hp(1),
     fontWeight: '500',
   },
   membershipBadge: {
     backgroundColor: '#EEF2FF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: wp(3),
+    paddingVertical: hp(0.75),
+    borderRadius: scale(12),
     alignSelf: 'flex-start',
   },
   membershipText: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#2563EB',
     fontWeight: '700',
   },
@@ -848,103 +1006,103 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: hp(1.75),
+    borderRadius: scale(12),
   },
   editProfileText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '800',
-    marginRight: 8,
+    marginRight: wp(2),
   },
   editProfileIcon: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '700',
   },
   creditScoreCard: {
     backgroundColor: '#1E293B',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: scale(20),
+    padding: wp(6),
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: hp(0.25) },
     shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
   },
   creditScoreContent: {
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   creditScoreLabel: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#94A3B8',
-    marginBottom: 12,
+    marginBottom: hp(1.5),
     fontWeight: '600',
   },
   creditScoreValueContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   creditScoreValue: {
-    fontSize: 48,
+    fontSize: scaleFont(48),
     fontWeight: '900',
     color: '#FFFFFF',
-    marginRight: 12,
+    marginRight: wp(3),
   },
   creditScoreBadge: {
     backgroundColor: '#10B981',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: wp(3),
+    paddingVertical: hp(0.75),
+    borderRadius: scale(12),
   },
   creditScoreBadgeText: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#FFFFFF',
     fontWeight: '700',
   },
   creditScoreBar: {
-    height: 8,
+    height: hp(1),
     backgroundColor: '#334155',
-    borderRadius: 4,
+    borderRadius: scale(4),
     overflow: 'hidden',
   },
   creditScoreFill: {
     height: '100%',
     backgroundColor: '#10B981',
-    borderRadius: 4,
+    borderRadius: scale(4),
   },
   viewReportButton: {
     alignItems: 'center',
   },
   viewReportText: {
     color: '#60A5FA',
-    fontSize: 15,
+    fontSize: scaleFont(15),
     fontWeight: '700',
   },
   statsContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: wp(3),
   },
   statCard: {
     flex: 1,
-    paddingVertical: 20,
-    paddingHorizontal: 12,
-    borderRadius: 16,
+    paddingVertical: hp(2.5),
+    paddingHorizontal: wp(3),
+    borderRadius: scale(16),
     alignItems: 'center',
   },
   statIcon: {
-    fontSize: 28,
-    marginBottom: 8,
+    fontSize: scaleFont(28),
+    marginBottom: hp(1),
   },
   statValue: {
-    fontSize: 24,
+    fontSize: scaleFont(24),
     fontWeight: '900',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: hp(0.5),
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: scaleFont(11),
     color: '#6B7280',
     fontWeight: '600',
     textAlign: 'center',
@@ -956,99 +1114,99 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '800',
     color: '#111827',
   },
   sectionEditText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#2563EB',
     fontWeight: '700',
   },
   kycVerifiedBadge: {
     backgroundColor: '#ECFDF5',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: wp(3),
+    paddingVertical: hp(0.75),
+    borderRadius: scale(12),
   },
   kycVerifiedText: {
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#059669',
     fontWeight: '700',
   },
   infoCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: scale(16),
+    padding: wp(5),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: hp(0.125) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
   },
   infoItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   infoIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: wp(11),
+    height: wp(11),
+    borderRadius: scale(22),
     backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+    marginRight: wp(3.5),
   },
   infoIcon: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
   },
   infoContent: {
     flex: 1,
   },
   infoLabel: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     color: '#6B7280',
-    marginBottom: 4,
+    marginBottom: hp(0.5),
     fontWeight: '600',
   },
   infoValue: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#111827',
     fontWeight: '700',
   },
   infoDivider: {
-    height: 1,
+    height: hp(0.125),
     backgroundColor: '#E5E7EB',
-    marginVertical: 16,
+    marginVertical: hp(2),
   },
   inputWrapper: {
-    marginBottom: 20,
+    marginBottom: hp(2.5),
   },
   inputLabel: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 8,
-    marginLeft: 4,
+    marginBottom: hp(1),
+    marginLeft: wp(1),
   },
   input: {
-    height: 52,
+    height: hp(6.5),
     borderWidth: 1.5,
     borderColor: '#E5E7EB',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
+    borderRadius: scale(12),
+    paddingHorizontal: wp(4),
+    fontSize: scaleFont(16),
     backgroundColor: '#FFFFFF',
     color: '#111827',
     fontWeight: '500',
   },
   profilePicButton: {
     backgroundColor: '#F3F4F6',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: hp(1.5),
+    borderRadius: scale(12),
     alignItems: 'center',
     borderStyle: 'dashed',
     borderWidth: 1.5,
@@ -1056,56 +1214,56 @@ const styles = StyleSheet.create({
   },
   profilePicButtonText: {
     color: '#4B5563',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '600',
   },
   addButton: {
     backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 12,
+    paddingVertical: hp(1.75),
+    paddingHorizontal: wp(5),
+    borderRadius: scale(12),
     alignItems: 'center',
     justifyContent: 'center',
   },
   addButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '700',
   },
   forgotPasswordButton: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    paddingVertical: 16,
+    paddingVertical: hp(2),
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 14,
-    marginBottom: 12,
+    borderRadius: scale(14),
+    marginBottom: hp(1.5),
     borderWidth: 1.5,
     borderColor: '#2563EB',
   },
   forgotPasswordIcon: {
-    fontSize: 20,
-    marginRight: 10,
+    fontSize: scaleFont(20),
+    marginRight: wp(2.5),
   },
   forgotPasswordText: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '800',
     color: '#2563EB',
   },
   logoutButton: {
     flexDirection: 'row',
-    paddingVertical: 16,
+    paddingVertical: hp(2),
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 14,
+    borderRadius: scale(14),
     backgroundColor: '#FEE2E2',
   },
   logoutIcon: {
-    fontSize: 20,
-    marginRight: 10,
+    fontSize: scaleFont(20),
+    marginRight: wp(2.5),
   },
   logoutText: {
-    fontSize: 16,
+    fontSize: scaleFont(16),
     fontWeight: '800',
     color: '#DC2626',
   },
